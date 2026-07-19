@@ -9,13 +9,16 @@ import androidx.savedstate.SavedStateRegistryOwner
 
 /**
  * A minimal LifecycleOwner + SavedStateRegistryOwner for use inside a Service.
- * ComposeView normally gets these from an Activity's lifecycle — since a
- * Service has no such lifecycle, we provide our own simple one here.
  *
- * Call `onCreate()` before attaching the ComposeView, and `onDestroy()`
- * when the overlay is removed (e.g. in Service.onDestroy()).
+ * IMPORTANT: This is a CLASS, not a singleton object. Lifecycle's DESTROYED state
+ * is terminal — once set, it can never transition to any other state. If this were
+ * a singleton reused across multiple on/off toggles of the overlay, the second
+ * "on" after an "off" would crash trying to revive a destroyed lifecycle.
+ *
+ * Instead, create a NEW instance of this class every time OverlayService starts
+ * (in onCreate), and simply discard it when the service stops (onDestroy).
  */
-object OverlayLifecycleOwner : LifecycleOwner, SavedStateRegistryOwner {
+class OverlayLifecycleOwner : LifecycleOwner, SavedStateRegistryOwner {
 
     private val lifecycleRegistry = LifecycleRegistry(this)
     private val savedStateRegistryController = SavedStateRegistryController.create(this)

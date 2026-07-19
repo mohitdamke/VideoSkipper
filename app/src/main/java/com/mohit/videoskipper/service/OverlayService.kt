@@ -1,6 +1,5 @@
 package com.mohit.videoskipper.service
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -8,28 +7,35 @@ import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.IBinder
 import android.view.Gravity
-import android.view.MotionEvent
 import android.view.WindowManager
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.mohit.videoskipper.MainActivity
 import com.mohit.videoskipper.R
-import com.mohit.videoskipper.presentation.FloatingBubble
+import com.mohit.videoskipper.presentation.FloatingBubbleIcon
 
 class OverlayService : Service() {
 
+    companion object {
+        // Tracks whether the service is actually alive right now — MainActivity reads
+        // this instead of Settings.canDrawOverlays(), which only reflects permission,
+        // not whether the overlay is actually running.
+        @Volatile
+        var isRunning: Boolean = false
+            private set
+    }
+
     private lateinit var windowManager: WindowManager
     private var bubbleView: ComposeView? = null
-    private var expanded by mutableStateOf(false)
-    private var featureOn by mutableStateOf(false)
+    private lateinit var lifecycleOwner: OverlayLifecycleOwner
 
     override fun onCreate() {
         super.onCreate()
-        OverlayLifecycleOwner.onCreate()
+        isRunning = true
+        lifecycleOwner = OverlayLifecycleOwner()
+        lifecycleOwner.onCreate()
         startForegroundNotification()
         showBubble()
     }
@@ -50,7 +56,6 @@ class OverlayService : Service() {
         startForeground(1, notification)
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private fun showBubble() {
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
 
@@ -67,14 +72,16 @@ class OverlayService : Service() {
         }
 
         bubbleView = ComposeView(this).apply {
-            setViewTreeLifecycleOwner(OverlayLifecycleOwner)
-            setViewTreeSavedStateRegistryOwner(OverlayLifecycleOwner)
+            setViewTreeLifecycleOwner(lifecycleOwner)
+            setViewTreeSavedStateRegistryOwner(lifecycleOwner)
             setContent {
-                FloatingBubble(
-                    expanded = expanded,
-                    featureOn = featureOn,
-                    onBubbleClick = { expanded = !expanded },
-                    onToggle = { featureOn = !featureOn },
+                FloatingBubbleIcon(
+                    onClick = {
+                        val intent = Intent(this@OverlayService, MainActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                        }
+                        startActivity(intent)
+                    },
                     onDrag = { dx, dy ->
                         params.x += dx.toInt()
                         params.y += dy.toInt()
@@ -89,10 +96,19 @@ class OverlayService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        bubbleView?.let { windowManager.removeView(it) }
-        OverlayLifecycleOwner.onDestroy()
+        isRunning = false
+        bubbleView?.let {
+            try {
+                windowManager.removeView(it)
+            } catch (e: IllegalArgumentException) {
+                // View wasn't attached — safe to ignore
+            }
+        }
+        bubbleView = null
+        if (::lifecycleOwner.isInitialized) {
+            lifecycleOwner.onDestroy()
+        }
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
-
 }
