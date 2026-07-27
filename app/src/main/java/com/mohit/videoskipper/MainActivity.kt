@@ -18,7 +18,9 @@ import androidx.core.net.toUri
 import com.mohit.videoskipper.navigation.NavigationScreen
 import com.mohit.videoskipper.service.OverlayService
 import com.mohit.videoskipper.ui.theme.VideoSkipperTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private var featureOn by mutableStateOf(false)
