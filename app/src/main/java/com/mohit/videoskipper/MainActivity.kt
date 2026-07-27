@@ -7,30 +7,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import com.mohit.videoskipper.presentation.CategoryListScreen
-import com.mohit.videoskipper.presentation.CategoryScreen
-import com.mohit.videoskipper.presentation.SubCategoryListScreen
-import com.mohit.videoskipper.presentation.defaultCategories
+import com.mohit.videoskipper.navigation.NavigationScreen
 import com.mohit.videoskipper.service.OverlayService
 import com.mohit.videoskipper.ui.theme.VideoSkipperTheme
 
@@ -64,7 +49,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             VideoSkipperTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    MainScreen(
+                    NavigationScreen(
                         featureOn = featureOn,
                         onFeatureToggle = { checked ->
                             if (checked) {
@@ -114,59 +99,5 @@ class MainActivity : ComponentActivity() {
 
     private fun stopOverlayService() {
         stopService(Intent(this, OverlayService::class.java))
-    }
-}
-
-@androidx.compose.runtime.Composable
-private fun MainScreen(
-    featureOn: Boolean,
-    onFeatureToggle: (Boolean) -> Unit
-) {
-    var categories by remember { mutableStateOf(defaultCategories()) }
-    var screen by remember { mutableStateOf<CategoryScreen>(CategoryScreen.List) }
-
-    Column(modifier = Modifier.fillMaxSize()) {
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Enable Floating Icon", style = MaterialTheme.typography.titleMedium)
-            Switch(checked = featureOn, onCheckedChange = onFeatureToggle)
-        }
-
-        Divider()
-
-        when (val current = screen) {
-            is CategoryScreen.List -> {
-                CategoryListScreen(
-                    categories = categories,
-                    onCategoryClick = { category ->
-                        screen = CategoryScreen.SubList(category.id)
-                    }
-                )
-            }
-            is CategoryScreen.SubList -> {
-                val category = categories.firstOrNull { it.id == current.categoryId }
-                if (category != null) {
-                    SubCategoryListScreen(
-                        category = category,
-                        onBack = { screen = CategoryScreen.List },
-                        onItemToggle = { itemId, checked ->
-                            categories = categories.map { cat ->
-                                if (cat.id == category.id) {
-                                    cat.copy(items = cat.items.map { item ->
-                                        if (item.id == itemId) item.copy(isBlocked = checked) else item
-                                    })
-                                } else cat
-                            }
-                        }
-                    )
-                }
-            }
-        }
     }
 }

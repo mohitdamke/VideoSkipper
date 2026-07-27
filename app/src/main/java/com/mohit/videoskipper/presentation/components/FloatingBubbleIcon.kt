@@ -1,4 +1,4 @@
-package com.mohit.videoskipper.presentation
+package com.mohit.videoskipper.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,10 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 
-/**
- * The small draggable circular icon that floats over other apps.
- * Tapping it toggles the expanded FloatingPanel; dragging moves the overlay window.
- */
 @Composable
 fun FloatingBubbleIcon(
     onClick: () -> Unit,

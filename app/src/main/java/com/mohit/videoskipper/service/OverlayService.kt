@@ -14,7 +14,7 @@ import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.mohit.videoskipper.MainActivity
 import com.mohit.videoskipper.R
-import com.mohit.videoskipper.presentation.FloatingBubbleIcon
+import com.mohit.videoskipper.presentation.components.FloatingBubbleIcon
 
 class OverlayService : Service() {
 
@@ -43,13 +43,13 @@ class OverlayService : Service() {
     private fun startForegroundNotification() {
         val channelId = "overlay_channel"
         val channel = NotificationChannel(
-            channelId, "Swipii Overlay", NotificationManager.IMPORTANCE_LOW
+            channelId, "VideoSkipper Overlay", NotificationManager.IMPORTANCE_LOW
         )
         val manager = getSystemService(NotificationManager::class.java)
         manager.createNotificationChannel(channel)
 
         val notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle("Swipii running")
+            .setContentTitle("VideoSkipper running")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .build()
 
