@@ -30,7 +30,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mohit.videoskipper.navigation.Routes
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
