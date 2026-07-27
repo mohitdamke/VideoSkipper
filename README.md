@@ -1,4 +1,13 @@
 ###  VideoSkipper — Smart Reel/Shorts Auto-Skip App
+<img width="512" height="512" alt="appIcon" src="https://github.com/user-attachments/assets/32763238-4a51-4bb5-91b3-8460cce2a055" />
+
+
+<img width="320" height="660" alt="2_reel_text_mode" src="https://github.com/user-attachments/assets/aecc8a2b-7e68-48c5-94ce-b75706eeaf78" />
+<img width="320" height="660" alt="1_reel_bubble_tapped" src="https://github.com/user-attachments/assets/ecaf213d-45d1-41c6-bb41-203429f4e807" />
+<img width="320" height="660" alt="4_app_home" src="https://github.com/user-attachments/assets/70dd48c6-c77d-4c1e-ba4b-83881706f006" />
+<img width="320" height="660" alt="3_reel_crop_mode" src="https://github.com/user-attachments/assets/68d8bc11-cc1a-498a-841d-de33d72874f4" />
+<img width="320" height="660" alt="5_app_text_list" src="https://github.com/user-attachments/assets/4d1ba035-3598-4ba5-91c1-4060339ab63f" />
+<img width="320" height="660" alt="6_app_face_list" src="https://github.com/user-attachments/assets/9a693950-6dec-4f15-bcef-d111ed811eab" />
 
 
 ## Project Overview
