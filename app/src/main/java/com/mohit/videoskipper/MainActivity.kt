@@ -1,5 +1,6 @@
 package com.mohit.videoskipper
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -65,6 +66,18 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+    fun openAccessibilitySettings(context: Context) {
+        context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+    }
+
+    fun isAccessibilityServiceEnabled(context: Context, serviceClass: Class<*>): Boolean {
+        val expectedId = "${context.packageName}/${serviceClass.canonicalName}"
+        val enabledServices = Settings.Secure.getString(
+            context.contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+        ) ?: return false
+        return enabledServices.split(':').any { it.equals(expectedId, ignoreCase = true) }
     }
 
     override fun onResume() {

@@ -8,28 +8,43 @@ import android.graphics.PixelFormat
 import android.os.IBinder
 import android.view.Gravity
 import android.view.WindowManager
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.mohit.videoskipper.MainActivity
 import com.mohit.videoskipper.R
+import com.mohit.videoskipper.domain.repository.KeywordRepository
+import com.mohit.videoskipper.domain.repository.MonitoringRepository
 import com.mohit.videoskipper.presentation.components.FloatingBubbleIcon
+import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class OverlayService : Service() {
 
     companion object {
-        // Tracks whether the service is actually alive right now — MainActivity reads
-        // this instead of Settings.canDrawOverlays(), which only reflects permission,
-        // not whether the overlay is actually running.
         @Volatile
         var isRunning: Boolean = false
             private set
     }
 
+    @Inject lateinit var keywordRepository: KeywordRepository
+    @Inject lateinit var monitoringRepository: MonitoringRepository
+
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
     private lateinit var windowManager: WindowManager
-    private var bubbleView: ComposeView? = null
     private lateinit var lifecycleOwner: OverlayLifecycleOwner
+    private lateinit var params: WindowManager.LayoutParams
+
+    private var bubbleView: ComposeView? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -59,7 +74,7 @@ class OverlayService : Service() {
     private fun showBubble() {
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
 
-        val params = WindowManager.LayoutParams(
+        params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
@@ -71,29 +86,64 @@ class OverlayService : Service() {
             y = 300
         }
 
-        bubbleView = ComposeView(this).apply {
+        val view = ComposeView(this).apply {
             setViewTreeLifecycleOwner(lifecycleOwner)
             setViewTreeSavedStateRegistryOwner(lifecycleOwner)
             setContent {
+                // Collected directly from the repository flows — this composition IS
+                // the "ViewModel" here since a bare Service has no ViewModelStoreOwner.
+                val isTextDetectionOn by monitoringRepository.isTextDetectionEnabled()
+                    .collectAsState(initial = false)
+                val isImageDetectionOn by monitoringRepository.isImageDetectionEnabled()
+                    .collectAsState(initial = false)
+
                 FloatingBubbleIcon(
-//                    onClick = {
-//                        val intent = Intent(this@OverlayService, MainActivity::class.java).apply {
-//                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-//                        }
-//                        startActivity(intent)
-//                    },
-                    onImageClick =  {},
-                    onTextClick =  {},
+                    isTextDetectionOn = isTextDetectionOn,
+                    onToggleTextDetection = {
+                        serviceScope.launch {
+                            monitoringRepository.setTextDetectionEnabled(!isTextDetectionOn)
+                        }
+                    },
+                    isImageDetectionOn = isImageDetectionOn,
+                    onToggleImageDetection = {
+                        serviceScope.launch {
+                            monitoringRepository.setImageDetectionEnabled(!isImageDetectionOn)
+                        }
+                    },
+                    onSendText = { text ->
+                        serviceScope.launch {
+                            keywordRepository.addKeyword(text)
+                        }
+                    },
+                    onImageClick = { /* TODO: image keyword flow */ },
                     onDrag = { dx, dy ->
                         params.x += dx.toInt()
                         params.y += dy.toInt()
-                        windowManager.updateViewLayout(bubbleView, params)
+                        windowManager.updateViewLayout(this, params)
+                    },
+                    onTextInputFocusChange = { focused ->
+                        toggleFocusable(focused)
                     }
                 )
             }
         }
 
-        windowManager.addView(bubbleView, params)
+        bubbleView = view
+        windowManager.addView(view, params)
+    }
+
+    private fun toggleFocusable(focusable: Boolean) {
+        val view = bubbleView ?: return
+
+        params.flags = if (focusable) {
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+        } else {
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        }
+        params.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE or
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+
+        windowManager.updateViewLayout(view, params)
     }
 
     override fun onDestroy() {
@@ -110,6 +160,7 @@ class OverlayService : Service() {
         if (::lifecycleOwner.isInitialized) {
             lifecycleOwner.onDestroy()
         }
+        serviceScope.cancel()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
