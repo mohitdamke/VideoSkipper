@@ -28,12 +28,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -44,7 +46,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,6 +53,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mohit.videoskipper.data.KeywordEntity
+import com.mohit.videoskipper.presentation.components.ui.IconChip
+import com.mohit.videoskipper.presentation.components.ui.ScanAccentDivider
+import com.mohit.videoskipper.ui.theme.Coral500
+import com.mohit.videoskipper.ui.theme.Ink400
+import com.mohit.videoskipper.ui.theme.Signal500
+import com.mohit.videoskipper.ui.theme.VideoSkipperTheme
 import com.mohit.videoskipper.viewmodel.TextViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,28 +80,35 @@ fun TextScreen(
 
     Scaffold(
         modifier = modifier,
-        containerColor = Color(0xFFF6F2EB),
+        containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(snackbarHostState) },
 
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Flagged Text") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                            contentDescription = null
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFF6F2EB)
+            Column {
+                CenterAlignedTopAppBar(
+                    title = { Text("Flagged Text") },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background
+                    )
                 )
-            )
+                ScanAccentDivider()
+            }
         },
 
         floatingActionButton = {
-            FloatingActionButton(onClick = { viewModel.onAddDialogOpen() }) {
+            FloatingActionButton(
+                onClick = { viewModel.onAddDialogOpen() },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
                 Icon(
                     imageVector = Icons.Outlined.TextFields,
                     contentDescription = "Add Text"
@@ -112,7 +126,8 @@ fun TextScreen(
             when {
                 uiState.isLoading -> {
                     CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -138,8 +153,9 @@ fun TextScreen(
                                 singleLine = true,
                                 shape = RoundedCornerShape(50.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedContainerColor = Color.White,
-                                    unfocusedContainerColor = Color.White
+                                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary
                                 )
                             )
                             Spacer(modifier = Modifier.height(4.dp))
@@ -153,7 +169,7 @@ fun TextScreen(
                                         .fillMaxWidth()
                                         .padding(top = 24.dp),
                                     textAlign = TextAlign.Center,
-                                    color = Color.Gray
+                                    color = Ink400
                                 )
                             }
                         }
@@ -190,29 +206,43 @@ private fun KeywordCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 12.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            IconChip(
+                icon = Icons.Outlined.TextFields,
+                isOn = keyword.isActive,
+                modifier = Modifier.size(40.dp)
+            )
+
             Text(
                 text = keyword.text,
-                modifier = Modifier.weight(1f)
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 12.dp)
             )
 
             Switch(
                 checked = keyword.isActive,
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = MaterialTheme.colorScheme.surface,
+                    checkedTrackColor = Signal500
+                ),
                 onCheckedChange = { onToggleActive() }
             )
 
             IconButton(onClick = onDelete) {
                 Icon(
                     imageVector = Icons.Outlined.Delete,
-                    contentDescription = "Delete"
+                    contentDescription = "Delete",
+                    tint = Coral500
                 )
             }
         }
@@ -225,21 +255,20 @@ private fun EmptyState(modifier: Modifier = Modifier) {
         modifier = modifier.padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            imageVector = Icons.Outlined.TextFields,
-            contentDescription = null,
-            modifier = Modifier.size(48.dp),
-            tint = Color.Gray
+        IconChip(
+            icon = Icons.Outlined.TextFields,
+            isOn = false,
+            modifier = Modifier.size(64.dp)
         )
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "No flagged text yet",
-            color = Color.Gray
+            style = MaterialTheme.typography.bodyLarge
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "Tap + to add a word like \"pizza\" to auto-skip.",
-            color = Color.Gray,
+            style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.Center
         )
     }
@@ -261,6 +290,10 @@ private fun AddKeywordDialog(
                 onValueChange = onInputChange,
                 placeholder = { Text("e.g. pizza") },
                 singleLine = true,
+                shape = RoundedCornerShape(50.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
         },
@@ -280,5 +313,7 @@ private fun AddKeywordDialog(
 @Preview(showBackground = true)
 @Composable
 private fun TextScreenPreview() {
-    TextScreen(navController = rememberNavController())
+    VideoSkipperTheme {
+        TextScreen(navController = rememberNavController())
+    }
 }

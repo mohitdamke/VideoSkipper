@@ -1,5 +1,7 @@
 package com.mohit.videoskipper.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -8,6 +10,7 @@ import com.mohit.videoskipper.presentation.screens.HomeScreen
 import com.mohit.videoskipper.presentation.screens.ImageScreen
 import com.mohit.videoskipper.presentation.screens.TextScreen
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun NavigationScreen(
     featureOn: Boolean,
@@ -23,8 +26,6 @@ fun NavigationScreen(
 
         composable(route = Routes.Home.route) {
             HomeScreen(
-                featureOn = featureOn,
-                onFeatureToggle = onFeatureToggle,
                 navController = navController
             )
         }

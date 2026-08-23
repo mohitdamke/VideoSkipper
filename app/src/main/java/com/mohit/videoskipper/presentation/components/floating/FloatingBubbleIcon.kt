@@ -45,7 +45,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -55,10 +54,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mohit.videoskipper.R
+import com.mohit.videoskipper.ui.theme.Ink600
+import com.mohit.videoskipper.ui.theme.Ocean400
+import com.mohit.videoskipper.ui.theme.Ocean700
+import com.mohit.videoskipper.ui.theme.Sand100
+import com.mohit.videoskipper.ui.theme.Signal500
+import com.mohit.videoskipper.ui.theme.SurfaceWhite
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
-import androidx.compose.material.icons.filled.Image as ImageIcon
 
+/**
+ * Kept deliberately theme-const (not MaterialTheme.colorScheme) — this
+ * composable is hosted in a system overlay window, which may not be
+ * wrapped in VideoSkipperTheme, so it pulls the same palette directly
+ * to stay visually identical to the rest of the app.
+ */
 @Composable
 fun FloatingBubbleIcon(
     isTextDetectionOn: Boolean,
@@ -103,7 +113,7 @@ fun FloatingBubbleIcon(
         ) {
             Card(
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
                 elevation = CardDefaults.cardElevation(6.dp)
             ) {
                 Column(
@@ -113,7 +123,7 @@ fun FloatingBubbleIcon(
                 ) {
                     DetectionRow(
                         icon = Icons.Filled.TextFields,
-                        label = "Text detection",
+                        label = "Text",
                         isOn = isTextDetectionOn,
                         onIconClick = {
                             showTextInput = true
@@ -122,13 +132,14 @@ fun FloatingBubbleIcon(
                         onToggle = onToggleTextDetection
                     )
 
-                    DetectionRow(
-                        icon = Icons.Filled.ImageIcon,
-                        label = "Image detection",
-                        isOn = isImageDetectionOn,
-                        onIconClick = onImageClick,
-                        onToggle = onToggleImageDetection
-                    )
+                    // Image detection — coming soon, hidden from the UI for now.
+                    // DetectionRow(
+                    //     icon = Icons.Filled.Image,
+                    //     label = "Image detection",
+                    //     isOn = isImageDetectionOn,
+                    //     onIconClick = onImageClick,
+                    //     onToggle = onToggleImageDetection
+                    // )
                 }
             }
         }
@@ -138,14 +149,12 @@ fun FloatingBubbleIcon(
                 .size(56.dp)
                 .clip(CircleShape)
                 .background(
-                    Brush.linearGradient(
-                        listOf(Color(0xFF0C447C), Color(0xFF4C9CE8))
-                    )
+                    Brush.linearGradient(listOf(Ocean700, Ocean400))
                 )
-                // Green ring = at least one detection type is live
+                // Signal ring = at least one detection type is live
                 .then(
                     if (isAnyDetectionOn) {
-                        Modifier.border(2.dp, Color(0xFF4CAF50), CircleShape)
+                        Modifier.border(2.dp, Signal500, CircleShape)
                     } else Modifier
                 )
                 .pointerInput(Unit) {
@@ -190,14 +199,14 @@ private fun DetectionRow(
             modifier = Modifier
                 .size(38.dp)
                 .clip(CircleShape)
-                .background(if (isOn) Color(0xFF0C447C) else Color(0xFFE0E0E0))
+                .background(if (isOn) Ocean700 else Sand100)
                 .clickable(onClick = onIconClick),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                tint = if (isOn) Color.White else Color(0xFF757575),
+                tint = if (isOn) SurfaceWhite else Ink600,
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -213,10 +222,10 @@ private fun DetectionRow(
             checked = isOn,
             onCheckedChange = { onToggle() },
             colors = SwitchDefaults.colors(
-                checkedThumbColor = Color.White,
-                checkedTrackColor = Color(0xFF2E7D32),
-                uncheckedThumbColor = Color.White,
-                uncheckedTrackColor = Color(0xFFBDBDBD)
+                checkedThumbColor = SurfaceWhite,
+                checkedTrackColor = Signal500,
+                uncheckedThumbColor = SurfaceWhite,
+                uncheckedTrackColor = Sand100
             ),
             modifier = Modifier.size(width = 40.dp, height = 24.dp)
         )
@@ -239,7 +248,7 @@ private fun InlineTextInputCard(
 
     Card(
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
         elevation = CardDefaults.cardElevation(6.dp)
     ) {
         Row(
@@ -266,8 +275,9 @@ private fun InlineTextInputCard(
                     }
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White
+                    focusedContainerColor = SurfaceWhite,
+                    unfocusedContainerColor = SurfaceWhite,
+                    focusedBorderColor = Ocean700
                 )
             )
 
@@ -282,7 +292,7 @@ private fun InlineTextInputCard(
                 Icon(
                     imageVector = Icons.Filled.Send,
                     contentDescription = "Send",
-                    tint = Color(0xFF0C447C)
+                    tint = Ocean700
                 )
             }
         }

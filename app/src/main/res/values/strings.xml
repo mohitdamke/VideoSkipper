@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">VideoSkipper</string>
+    <string name="accessibility_service_label">VideoSkipper Auto-Scroll</string>
+    <string name="accessibility_service_description">Reads on-screen text to detect keywords and automatically scrolls past matching content.</string>
 </resources>

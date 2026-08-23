@@ -1,16 +1,22 @@
 package com.mohit.videoskipper.presentation.screens
 
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Article
-import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ElevatedCard
@@ -18,35 +24,86 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mohit.videoskipper.navigation.Routes
+import com.mohit.videoskipper.presentation.components.ui.IconChip
+import com.mohit.videoskipper.presentation.components.ui.ScanAccentDivider
+import com.mohit.videoskipper.presentation.components.ui.SectionLabel
+import com.mohit.videoskipper.presentation.components.ui.StatusPill
+import com.mohit.videoskipper.service.OverlayService
+import com.mohit.videoskipper.ui.theme.Signal500
+import com.mohit.videoskipper.ui.theme.VideoSkipperTheme
+import com.mohit.videoskipper.viewmodel.MonitoringViewModel
 
+@RequiresApi(Build.VERSION_CODES.R)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    featureOn: Boolean,
-    onFeatureToggle: (Boolean) -> Unit,
-    navController: NavController
+    navController: NavController,
+    viewModel: MonitoringViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+
+    var isBubbleRunning by remember { mutableStateOf(OverlayService.isRunning) }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.refreshAccessibilityServiceStatus()
+                isBubbleRunning = OverlayService.isRunning
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.onErrorShown()
+        }
+    }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text("Video Skipper")
-                },
-                colors = TopAppBarDefaults.topAppBarColors()
-            )
-        }
+            Column {
+                CenterAlignedTopAppBar(
+                    title = { Text("Video Skipper") },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background
+                    )
+                )
+                ScanAccentDivider()
+            }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { innerPadding ->
 
         Column(
@@ -57,119 +114,182 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            // Floating Button Card
+            if (!uiState.isAccessibilityServiceEnabled) {
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.elevatedCardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    ),
+                    onClick = {
+                        context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                    }
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Lock,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                        Column(modifier = Modifier.padding(start = 12.dp)) {
+                            Text(
+                                text = "Accessibility permission required",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                            Text(
+                                text = "Tap to enable — needed to read the screen and auto-scroll.",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
             ElevatedCard(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.elevatedCardColors()
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 18.dp),
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
-                    Text(
-                        text = "Floating button",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                    Column {
+                        Text(
+                            text = "Floating button",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Text(
+                            text = "Shows the scan bubble over other apps.",
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+                    }
 
                     Switch(
-                        checked = featureOn,
-                        onCheckedChange = onFeatureToggle
+                        checked = isBubbleRunning,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.surface,
+                            checkedTrackColor = Signal500
+                        ),
+                        onCheckedChange = { turnOn ->
+                            if (turnOn) {
+                                if (!Settings.canDrawOverlays(context)) {
+                                    context.startActivity(
+                                        Intent(
+                                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                            Uri.parse("package:${context.packageName}")
+                                        )
+                                    )
+                                } else {
+                                    context.startService(Intent(context, OverlayService::class.java))
+                                    isBubbleRunning = true
+                                }
+                            } else {
+                                context.stopService(Intent(context, OverlayService::class.java))
+                                isBubbleRunning = false
+                            }
+                        }
                     )
                 }
             }
 
-            Text(
-                text = "DETECTION TYPE",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            SectionLabel(text = "DETECTION TYPE", modifier = Modifier.padding(top = 8.dp))
 
             DetectionItem(
-                icon = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.Article,
-                        contentDescription = null
-                    )
-                },
+                icon = Icons.AutoMirrored.Outlined.Article,
                 title = "Text",
-                onNavigateClick = {
-                    navController.navigate(Routes.Text.route)
-                }
+                subtitle = uiState.statusMessage,
+                isOn = uiState.isTextDetectionEnabled,
+                onToggle = { viewModel.onToggleTextDetection(it) },
+                onNavigateClick = { navController.navigate(Routes.Text.route) }
             )
 
-            DetectionItem(
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.Photo,
-                        contentDescription = null
-                    )
-                },
-                title = "Image",
-                onNavigateClick = {
-                    navController.navigate(Routes.Image.route)
-                }
-            )
+            // Image detection — coming soon, hidden from the UI for now.
+            // DetectionItem(
+            //     icon = Icons.Default.Photo,
+            //     title = "Image",
+            //     subtitle = if (uiState.isImageDetectionEnabled) "On" else "Off",
+            //     isOn = uiState.isImageDetectionEnabled,
+            //     onToggle = { viewModel.onToggleImageDetection(it) },
+            //     onNavigateClick = { navController.navigate(Routes.Image.route) }
+            // )
         }
     }
 }
 
 @Composable
 private fun DetectionItem(
-    icon: @Composable () -> Unit,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     title: String,
+    subtitle: String,
+    isOn: Boolean,
+    onToggle: (Boolean) -> Unit,
     onNavigateClick: () -> Unit
 ) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.elevatedCardColors(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
         onClick = onNavigateClick
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 18.dp),
+                .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            IconChip(icon = icon, isOn = isOn, modifier = Modifier.size(44.dp))
 
-            icon()
-
-            Text(
-                text = title,
+            Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 16.dp),
-                style = MaterialTheme.typography.bodyLarge
+                    .padding(start = 14.dp)
+            ) {
+                Text(text = title, style = MaterialTheme.typography.bodyLarge)
+                StatusPill(
+                    text = subtitle,
+                    active = isOn,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+
+            Switch(
+                checked = isOn,
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = MaterialTheme.colorScheme.surface,
+                    checkedTrackColor = Signal500
+                ),
+                onCheckedChange = onToggle
             )
 
             Icon(
                 imageVector = Icons.Outlined.ChevronRight,
-                contentDescription = null
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 4.dp)
             )
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Preview
 @Composable
 private fun HomePreview() {
-    HomeScreen(
-        featureOn = true,
-        onFeatureToggle = { checked ->
-            if (checked) {
-                // TODO:
-            } else {
-                // TODO:
-            }
-        },
-        navController = rememberNavController()
-
-    )
+    // Note: this preview will no longer render live data since hiltViewModel()
+    // needs a real Hilt graph — that's expected, run on-device to see real state.
+    VideoSkipperTheme {
+        HomeScreen(navController = rememberNavController())
+    }
 }

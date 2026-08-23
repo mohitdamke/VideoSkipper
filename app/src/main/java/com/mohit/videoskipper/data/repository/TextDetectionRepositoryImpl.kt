@@ -1,6 +1,7 @@
 package com.mohit.videoskipper.data.repository
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -10,6 +11,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resumeWithException
 
 class TextDetectionRepositoryImpl @Inject constructor() : TextDetectionRepository {
+    private val TAG = "HEEEEWaooo"
 
     private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
@@ -18,18 +20,25 @@ class TextDetectionRepositoryImpl @Inject constructor() : TextDetectionRepositor
             val image = InputImage.fromBitmap(bitmap, 0)
             recognizer.process(image)
                 .addOnSuccessListener { visionText ->
+                    Log.d(TAG, "🔤 OCR result (${visionText.text.length} chars): " +
+                            visionText.text.take(200).replace("\n", " | "))
                     if (cont.isActive) cont.resume(visionText.text) {}
                 }
                 .addOnFailureListener { e ->
+                    Log.e(TAG, "❌ ML Kit OCR failed: ${e.message}", e)
                     if (cont.isActive) cont.resumeWithException(e)
                 }
         }
 
     override suspend fun findMatchingKeyword(bitmap: Bitmap, keywords: List<String>): String? {
-        if (keywords.isEmpty()) return null
-        val detectedText = recognizeText(bitmap).lowercase()
-        return keywords.firstOrNull { keyword ->
-            detectedText.contains(keyword.lowercase())
+        if (keywords.isEmpty()) {
+            Log.d(TAG, "🔍 No active keywords to check against")
+            return null
         }
+        Log.d(TAG, "🔍 Checking against keywords: $keywords")
+        val detectedText = recognizeText(bitmap).lowercase()
+        val match = keywords.firstOrNull { keyword -> detectedText.contains(keyword.lowercase()) }
+        Log.d(TAG, if (match != null) "✅ Matched keyword: '$match'" else "❌ No keyword matched")
+        return match
     }
 }
