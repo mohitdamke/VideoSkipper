@@ -17,7 +17,7 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.mohit.videoskipper.R
 import com.mohit.videoskipper.domain.repository.KeywordRepository
 import com.mohit.videoskipper.domain.repository.MonitoringRepository
-import com.mohit.videoskipper.presentation.components.FloatingBubbleIcon
+import com.mohit.videoskipper.presentation.components.floating.FloatingBubbleIcon
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope

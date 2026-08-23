@@ -2,12 +2,14 @@ package com.mohit.videoskipper
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
@@ -43,6 +45,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -52,17 +55,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             VideoSkipperTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    NavigationScreen(
-                        featureOn = featureOn,
-                        onFeatureToggle = { checked ->
-                            if (checked) {
-                                checkAndRequestOverlayPermission()
-                            } else {
-                                stopOverlayService()
-                                featureOn = false
-                            }
-                        }
-                    )
+                    NavigationScreen()
                 }
             }
         }

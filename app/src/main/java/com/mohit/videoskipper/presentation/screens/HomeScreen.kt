@@ -208,7 +208,7 @@ fun HomeScreen(
 
             DetectionItem(
                 icon = Icons.AutoMirrored.Outlined.Article,
-                title = "Text",
+                textTitle = "Text",
                 subtitle = uiState.statusMessage,
                 isOn = uiState.isTextDetectionEnabled,
                 onToggle = { viewModel.onToggleTextDetection(it) },
@@ -231,7 +231,7 @@ fun HomeScreen(
 @Composable
 private fun DetectionItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    title: String,
+    textTitle: String,
     subtitle: String,
     isOn: Boolean,
     onToggle: (Boolean) -> Unit,
@@ -256,7 +256,7 @@ private fun DetectionItem(
                     .weight(1f)
                     .padding(start = 14.dp)
             ) {
-                Text(text = title, style = MaterialTheme.typography.bodyLarge)
+                Text(text = textTitle, style = MaterialTheme.typography.bodyLarge)
                 StatusPill(
                     text = subtitle,
                     active = isOn,

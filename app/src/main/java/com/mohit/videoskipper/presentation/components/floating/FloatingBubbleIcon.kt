@@ -1,4 +1,4 @@
-package com.mohit.videoskipper.presentation.components
+package com.mohit.videoskipper.presentation.components.floating
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -35,6 +35,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -183,7 +185,7 @@ fun FloatingBubbleIcon(
 
 @Composable
 private fun DetectionRow(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     label: String,
     isOn: Boolean,
     onIconClick: () -> Unit,
@@ -241,7 +243,7 @@ private fun InlineTextInputCard(
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
-    androidx.compose.runtime.LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) {
         delay(150.milliseconds) // small delay so WM flag change lands before requesting focus
         focusRequester.requestFocus()
     }

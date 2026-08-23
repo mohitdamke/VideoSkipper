@@ -18,11 +18,9 @@ class AutoScrollDetectionRepositoryImpl @Inject constructor(
 
     override suspend fun decide(bitmap: Bitmap): AutoScrollDecision {
         val isEnabled = monitoringRepository.getTextDetectionEnabledOnce()
-        Log.d(TAG, "Text detection enabled flag = $isEnabled")
         if (!isEnabled) return AutoScrollDecision.DetectionDisabled
 
         val activeKeywords = keywordRepository.getActiveKeywordTexts()
-        Log.d(TAG, "Active keywords from DB: $activeKeywords")
         if (activeKeywords.isEmpty()) return AutoScrollDecision.Stay
 
         val match = textDetectionRepository.findMatchingKeyword(bitmap, activeKeywords)

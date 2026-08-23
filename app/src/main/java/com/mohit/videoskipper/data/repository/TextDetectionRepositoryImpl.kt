@@ -20,9 +20,7 @@ class TextDetectionRepositoryImpl @Inject constructor() : TextDetectionRepositor
             val image = InputImage.fromBitmap(bitmap, 0)
             recognizer.process(image)
                 .addOnSuccessListener { visionText ->
-                    Log.d(TAG, "🔤 OCR result (${visionText.text.length} chars): " +
-                            visionText.text.take(200).replace("\n", " | "))
-                    if (cont.isActive) cont.resume(visionText.text) {}
+                    if (cont.isActive) cont.resume(visionText.text) { cause, _, _ -> }
                 }
                 .addOnFailureListener { e ->
                     Log.e(TAG, "❌ ML Kit OCR failed: ${e.message}", e)
@@ -32,13 +30,11 @@ class TextDetectionRepositoryImpl @Inject constructor() : TextDetectionRepositor
 
     override suspend fun findMatchingKeyword(bitmap: Bitmap, keywords: List<String>): String? {
         if (keywords.isEmpty()) {
-            Log.d(TAG, "🔍 No active keywords to check against")
             return null
         }
-        Log.d(TAG, "🔍 Checking against keywords: $keywords")
+
         val detectedText = recognizeText(bitmap).lowercase()
         val match = keywords.firstOrNull { keyword -> detectedText.contains(keyword.lowercase()) }
-        Log.d(TAG, if (match != null) "✅ Matched keyword: '$match'" else "❌ No keyword matched")
         return match
     }
 }

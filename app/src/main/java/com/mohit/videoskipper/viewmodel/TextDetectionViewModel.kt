@@ -8,7 +8,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.mohit.videoskipper.domain.repository.KeywordRepository
 import com.mohit.videoskipper.domain.repository.MonitoringRepository
-import com.mohit.videoskipper.service.PizzaDetectorAccessibilityService
+import com.mohit.videoskipper.service.TextDetectorAccessibilityService
 import com.mohit.videoskipper.states.TextDetectionUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -37,34 +37,21 @@ class TextDetectionViewModel @Inject constructor(
     private var previousEnabledValue: Boolean? = null
 
     init {
-        Log.d(TAG, "================ ViewModel Initialized ================")
-        Log.d(TAG, "Initializing TextDetectionViewModel")
         observeState()
         refreshAccessibilityServiceStatus()
     }
 
     private fun observeState() {
-        Log.d(TAG, "Starting observeState()")
 
         combine(
             monitoringRepository.isTextDetectionEnabled(),
             keywordRepository.getAllKeywords()
         ) { enabled, keywords ->
-            Log.d(
-                TAG,
-                "combine() -> enabled=$enabled, totalKeywords=${keywords.size}, activeKeywords=${keywords.count { it.isActive }}"
-            )
             enabled to keywords.count { it.isActive }
         }
             .onEach { (enabled, activeCount) ->
 
-                Log.d(
-                    TAG,
-                    "Received new state -> enabled=$enabled, activeKeywordCount=$activeCount"
-                )
-
                 _uiState.update {
-                    Log.d(TAG, "Updating UI State")
                     it.copy(
                         isTextDetectionEnabled = enabled,
                         activeKeywordCount = activeCount,
@@ -72,12 +59,9 @@ class TextDetectionViewModel @Inject constructor(
                     )
                 }
 
-                Log.d(TAG, "Calling applyToggleTransition($enabled)")
                 applyToggleTransition(enabled)
             }
             .catch { e ->
-
-                Log.e(TAG, "observeState() failed", e)
 
                 _uiState.update {
                     it.copy(
@@ -88,7 +72,6 @@ class TextDetectionViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
 
-        Log.d(TAG, "observeState() launched in viewModelScope")
     }
 
     /**
@@ -99,75 +82,41 @@ class TextDetectionViewModel @Inject constructor(
      */
     private fun applyToggleTransition(enabled: Boolean) {
 
-        Log.d(TAG, "applyToggleTransition(enabled=$enabled)")
-        Log.d(TAG, "Previous value = $previousEnabledValue")
-
         if (previousEnabledValue == enabled) {
-            Log.d(TAG, "Ignoring duplicate transition")
             return
         }
 
         previousEnabledValue = enabled
 
-        Log.d(TAG, "Updated previousEnabledValue=$previousEnabledValue")
 
-        val service = PizzaDetectorAccessibilityService.instance
+        val service = TextDetectorAccessibilityService.instance ?: return
 
-        Log.d(TAG, "Accessibility Service Instance = $service")
-
-        if (service == null) {
-            Log.d(TAG, "Service is NULL. Waiting for Accessibility Service connection.")
-            return
-        }
 
         if (enabled) {
-
-            Log.d(TAG, "Starting monitoring...")
-
             service.startMonitoring()
-
-            Log.d(TAG, "Monitoring started")
-
             service.triggerImmediateCheck()
 
-            Log.d(TAG, "Immediate screen check triggered")
-
         } else {
-
-            Log.d(TAG, "Stopping monitoring...")
-
             service.stopMonitoring()
-
-            Log.d(TAG, "Monitoring stopped")
         }
     }
 
     /** Call this when the screen resumes — accessibility permission can change outside the app. */
     fun refreshAccessibilityServiceStatus() {
 
-        Log.d(TAG, "Refreshing accessibility service status")
-
         val enabled = isAccessibilityServiceEnabled(
             getApplication(),
-            PizzaDetectorAccessibilityService::class.java
+            TextDetectorAccessibilityService::class.java
         )
-
-        Log.d(TAG, "Accessibility Enabled = $enabled")
 
         _uiState.update {
             it.copy(isAccessibilityServiceEnabled = enabled)
         }
-
-        Log.d(TAG, "UI State updated with accessibility status")
     }
 
     fun onToggleTextDetection(enabled: Boolean) {
 
-        Log.d(TAG, "User toggled Text Detection -> $enabled")
-
         if (enabled && !_uiState.value.isAccessibilityServiceEnabled) {
-
-            Log.d(TAG, "Accessibility permission missing")
 
             _uiState.update {
                 it.copy(errorMessage = "Enable accessibility permission first")
@@ -178,20 +127,11 @@ class TextDetectionViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            Log.d(TAG, "Saving detection state to repository")
-
             try {
 
                 monitoringRepository.setTextDetectionEnabled(enabled)
 
-                Log.d(
-                    TAG,
-                    "Repository updated successfully. Waiting for Flow to emit latest state."
-                )
-
             } catch (e: Exception) {
-
-                Log.e(TAG, "Failed to update text detection", e)
 
                 _uiState.update {
                     it.copy(
@@ -204,8 +144,6 @@ class TextDetectionViewModel @Inject constructor(
 
     fun onErrorShown() {
 
-        Log.d(TAG, "Clearing error message")
-
         _uiState.update {
             it.copy(errorMessage = null)
         }
@@ -216,27 +154,18 @@ class TextDetectionViewModel @Inject constructor(
         serviceClass: Class<*>
     ): Boolean {
 
-        Log.d(TAG, "Checking Accessibility Service status")
-
         val expectedId = "${context.packageName}/${serviceClass.canonicalName}"
-
-        Log.d(TAG, "Expected Service ID = $expectedId")
 
         val enabledServices = Settings.Secure.getString(
             context.contentResolver,
             Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
         ) ?: run {
-            Log.d(TAG, "No accessibility services are enabled")
             return false
         }
-
-        Log.d(TAG, "Enabled Services = $enabledServices")
 
         val result = enabledServices
             .split(':')
             .any { it.equals(expectedId, ignoreCase = true) }
-
-        Log.d(TAG, "Accessibility Service Enabled = $result")
 
         return result
     }

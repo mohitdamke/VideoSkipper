@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.Path
 import android.os.Build
 import android.os.SystemClock
-import android.util.Log
 import android.view.Display
 import android.view.accessibility.AccessibilityEvent
 import androidx.annotation.RequiresApi
@@ -30,9 +29,10 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.milliseconds
+import androidx.core.graphics.scale
 
 @AndroidEntryPoint
-class PizzaDetectorAccessibilityService : AccessibilityService(), ScreenActionController {
+class TextDetectorAccessibilityService : AccessibilityService(), ScreenActionController {
     private val TAG = "HEEEEWaooo"
 
     @Inject lateinit var scrollEventRepository: ScrollEventRepository
@@ -69,7 +69,6 @@ class PizzaDetectorAccessibilityService : AccessibilityService(), ScreenActionCo
     override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this
-        Log.d(TAG, "Accessibility service connected")
         startSampler()
     }
 
@@ -79,14 +78,7 @@ class PizzaDetectorAccessibilityService : AccessibilityService(), ScreenActionCo
 
         if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             currentForegroundPackage = pkg
-            val wasTargetApp = isTargetAppForeground
             isTargetAppForeground = pkg in watchedPackages
-            if (wasTargetApp != isTargetAppForeground) {
-                Log.d(TAG, if (isTargetAppForeground)
-                    "Target app '$pkg' came to foreground — sampler active"
-                else
-                    "Left target app (now '$pkg') — sampler idling, no captures")
-            }
         }
 
         if (pkg !in watchedPackages) return
@@ -102,7 +94,6 @@ class PizzaDetectorAccessibilityService : AccessibilityService(), ScreenActionCo
     }
 
     override fun onInterrupt() {
-        Log.w(TAG, "Accessibility service interrupted")
     }
 
     private var lastCaptureAtMs = 0L
@@ -110,13 +101,11 @@ class PizzaDetectorAccessibilityService : AccessibilityService(), ScreenActionCo
     private fun startSampler() {
         if (samplerJob?.isActive == true) return
         monitoringStartedAtElapsedMs = SystemClock.elapsedRealtime()
-        Log.d(TAG, "Sampler starting — auto-stop in ${MAX_CONTINUOUS_RUNTIME_MS / 3_600_000}h")
 
         samplerJob = serviceScope.launch {
             while (isActive) {
                 val elapsed = SystemClock.elapsedRealtime() - monitoringStartedAtElapsedMs
                 if (elapsed >= MAX_CONTINUOUS_RUNTIME_MS) {
-                    Log.w(TAG, "Reached ${MAX_CONTINUOUS_RUNTIME_MS / 3_600_000}h continuous runtime — auto-stopping detection")
                     monitoringRepository.setTextDetectionEnabled(false)
                     stopSampler()
                     break
@@ -139,7 +128,6 @@ class PizzaDetectorAccessibilityService : AccessibilityService(), ScreenActionCo
                     lastCaptureAtMs = now
 
                     delay(RENDER_SETTLE_MS.milliseconds)
-                    Log.d(TAG, "Capturing single screenshot for this scroll")
                     runDetectionCycle()
                 } else {
                     delay(POLL_INTERVAL_MS.milliseconds)
@@ -165,9 +153,7 @@ class PizzaDetectorAccessibilityService : AccessibilityService(), ScreenActionCo
 
             when (decision) {
                 is AutoScrollDecision.Skip -> {
-                    Log.i(TAG, "Match found: '${decision.matchedKeyword}' — auto-scrolling")
                     if (consecutiveAutoSwipes >= MAX_CONSECUTIVE_AUTO_SWIPES) {
-                        Log.w(TAG, "Hit max consecutive auto-swipes, cooling down")
                         consecutiveAutoSwipes = 0
                         return
                     }
@@ -181,7 +167,6 @@ class PizzaDetectorAccessibilityService : AccessibilityService(), ScreenActionCo
                 AutoScrollDecision.DetectionDisabled -> consecutiveAutoSwipes = 0
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Detection cycle failed", e)
         } finally {
             recycleBitmap(rawBitmap, "raw screenshot")
             if (scaledBitmap !== rawBitmap) {
@@ -195,18 +180,15 @@ class PizzaDetectorAccessibilityService : AccessibilityService(), ScreenActionCo
         if (bitmap.isRecycled) return
         bitmap.recycle()
         val remaining = liveBitmapCount.decrementAndGet()
-        Log.d(TAG, "Recycled $label bitmap — live bitmap count now: $remaining")
     }
 
     private suspend fun captureScreenRaw(): Bitmap? {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            Log.e(TAG, "takeScreenshot() unsupported below API 30")
             return null
         }
         val bitmap = takeScreenshotSuspend()
         if (bitmap != null) {
             val live = liveBitmapCount.incrementAndGet()
-            Log.d(TAG, "Screenshot captured: ${bitmap.width}x${bitmap.height} — live bitmap count now: $live")
         }
         return bitmap
     }
@@ -219,11 +201,10 @@ class PizzaDetectorAccessibilityService : AccessibilityService(), ScreenActionCo
 
         val scale = targetWidth.toFloat() / source.width
         val targetHeight = (source.height * scale).toInt()
-        val scaled = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, true)
+        val scaled = source.scale(targetWidth, targetHeight)
 
         if (scaled !== source) {
             val live = liveBitmapCount.incrementAndGet()
-            Log.d(TAG, "Downscaled to ${scaled.width}x${scaled.height} — live bitmap count now: $live")
             recycleBitmap(source, "raw screenshot (pre-scale)")
         }
         return scaled
@@ -248,11 +229,9 @@ class PizzaDetectorAccessibilityService : AccessibilityService(), ScreenActionCo
                 gesture,
                 object : GestureResultCallback() {
                     override fun onCompleted(gestureDescription: GestureDescription?) {
-                        Log.d(TAG, "Swipe gesture completed")
                     }
 
                     override fun onCancelled(gestureDescription: GestureDescription?) {
-                        Log.w(TAG, "Swipe gesture cancelled")
                     }
                 },
                 null
@@ -272,12 +251,11 @@ class PizzaDetectorAccessibilityService : AccessibilityService(), ScreenActionCo
                             result.hardwareBuffer, result.colorSpace
                         )?.copy(Bitmap.Config.ARGB_8888, false)
                         result.hardwareBuffer.close()
-                        if (cont.isActive) cont.resume(bitmap) {}
+                        if (cont.isActive) cont.resume(bitmap) { cause, _, _ -> }
                     }
 
                     override fun onFailure(errorCode: Int) {
-                        Log.e(TAG, "takeScreenshot() failed, errorCode=$errorCode")
-                        if (cont.isActive) cont.resume(null) {}
+                        if (cont.isActive) cont.resume(null) { cause, _, _ -> }
                     }
                 }
             )
@@ -292,14 +270,13 @@ class PizzaDetectorAccessibilityService : AccessibilityService(), ScreenActionCo
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "Service destroyed — final live bitmap count: ${liveBitmapCount.get()}")
         stopSampler()
         serviceScope.cancel()
         instance = null
     }
 
     companion object {
-        var instance: PizzaDetectorAccessibilityService? = null
+        var instance: TextDetectorAccessibilityService? = null
 
         private const val RENDER_SETTLE_MS = 250L
         private const val POLL_INTERVAL_MS = 120L

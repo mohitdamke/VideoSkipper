@@ -12,10 +12,7 @@ import com.mohit.videoskipper.presentation.screens.TextScreen
 
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
-fun NavigationScreen(
-    featureOn: Boolean,
-    onFeatureToggle: (Boolean) -> Unit
-) {
+fun NavigationScreen() {
 
     val navController = rememberNavController()
 
