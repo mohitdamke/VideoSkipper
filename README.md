@@ -75,8 +75,6 @@ https://github.com/user-attachments/assets/2676f585-8ca7-40f2-a467-a997b8366e7d
 It works with apps such as:
 
 * Instagram Reels
-* YouTube Shorts
-* TikTok
 
 VideoSkipper monitors the foreground screen, captures screenshots when a genuine scroll occurs, extracts visible text using **Google ML Kit's on-device OCR**, and checks the detected text against the user's saved keywords.
 
