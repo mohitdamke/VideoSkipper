@@ -1,421 +1,645 @@
-# 🚗 CarTalk
+# 🎬 VideoSkipper
 
 <p align="center">
-  <strong>Real-time voice communication between nearby vehicles.</strong>
+  <img
+    src="https://github.com/user-attachments/assets/149c5644-e67e-4aca-a049-4d127857df7a"
+    width="180"
+    alt="VideoSkipper App Icon"
+  />
+</p>
+
+<h1 align="center">VideoSkipper</h1>
+
+<p align="center">
+  <strong>Automatically skip unwanted Reels & Shorts using on-device OCR.</strong>
 </p>
 
 <p align="center">
-  Discover nearby vehicles using Bluetooth Low Energy (BLE) and communicate through low-latency WebRTC voice calls — without sharing phone numbers.
+  An Android automation app that detects user-defined keywords on short-form videos
+  and automatically scrolls past matching content.
 </p>
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=bMRLdE_ClGQ">
-    <img
-      src="https://img.youtube.com/vi/bMRLdE_ClGQ/maxresdefault.jpg"
-      alt="CarTalk App Demo"
-      width="700"
-    />
+  <img src="https://img.shields.io/badge/Platform-Android-green?style=for-the-badge" alt="Android"/>
+  <img src="https://img.shields.io/badge/Language-Kotlin-purple?style=for-the-badge" alt="Kotlin"/>
+  <img src="https://img.shields.io/badge/UI-Jetpack%20Compose-blue?style=for-the-badge" alt="Jetpack Compose"/>
+  <img src="https://img.shields.io/badge/Min%20SDK-30-orange?style=for-the-badge" alt="Minimum SDK"/>
+</p>
+
+---
+
+# 🎥 Demo
+
+<p align="center">
+  <img
+    src="demo.gif"
+    width="600"
+    alt="VideoSkipper Demo"
+  />
+</p>
+
+<p align="center">
+  <i>VideoSkipper automatically detects unwanted content and skips it.</i>
+</p>
+
+### Full Demo
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=w0JSiymhGUY">
+    ▶️ Watch the full VideoSkipper demo on YouTube
   </a>
 </p>
-
-<p align="center">
-  ▶️ <strong>Click the video to watch the CarTalk Demo</strong>
-</p>
-
-
-<p align="center">
-  🎥 <strong>Watch the CarTalk Demo</strong>
-</p>
-
----
-
-## 📱 Overview
-
-CarTalk is an Android application that enables drivers traveling near each other to discover and communicate with one another.
-
-Instead of exchanging phone numbers, users can identify vehicles using their **car model and vehicle number**.
-
-The application uses:
-
-* 🔵 **Bluetooth Low Energy (BLE)** for nearby vehicle discovery
-* 📡 **RSSI** to estimate proximity
-* 📞 **WebRTC** for real-time voice communication
-* 🔥 **Firebase** for signaling and backend services
-* 🎨 **Jetpack Compose + Material 3** for the UI
-
-The goal is simple:
-
-> **Find a nearby vehicle → Select it → Start a voice call.**
-
----
-
-## ✨ Features
-
-### 🔍 Nearby Vehicle Discovery
-
-Automatically discovers CarTalk users within Bluetooth range.
-
-Each nearby vehicle can be identified using:
-
-* Vehicle number
-* Car model
-* Bluetooth signal strength
-
-### 📞 Real-Time Voice Calling
-
-Uses **WebRTC** to establish low-latency peer-to-peer audio communication.
-
-### 🔐 Privacy Focused
-
-CarTalk is designed around vehicle-based identification instead of exposing personal phone numbers.
-
-### 📡 BLE Proximity Detection
-
-Bluetooth Low Energy is used to discover nearby CarTalk devices and retrieve their advertising information.
-
-### 🔥 Firebase Signaling
-
-Firebase is used as the signaling layer required to establish WebRTC connections between users.
-
-### 🎨 Modern Android UI
-
-The application is built completely with:
-
-* Jetpack Compose
-* Material 3
-* Modern Android architecture
 
 ---
 
 # 📸 Screenshots
 
-<p align="center">
-  <img
-    src="https://github.com/user-attachments/assets/c209c228-6ce7-474d-a499-14552252c1da"
-    width="220"
-    alt="CarTalk Onboarding"
-  />
-  <img
-    src="https://github.com/user-attachments/assets/5253a642-b957-46ef-beee-cfac1dad83cf"
-    width="220"
-    alt="CarTalk Discovery"
-  />
-  <img
-    src="https://github.com/user-attachments/assets/610ba444-b1b0-4ea6-b130-4ba95592a123"
-    width="220"
-    alt="CarTalk Incoming Call"
-  />
-</p>
+### VideoSkipper Demo 1
+
+https://github.com/user-attachments/assets/069616eb-4ffc-4680-a73f-2359ddd4c0ae
+
+### VideoSkipper Demo 2
+
+https://github.com/user-attachments/assets/2676f585-8ca7-40f2-a467-a997b8366e7d
 
 <p align="center">
-  <img
-    src="https://github.com/user-attachments/assets/8709648d-4620-4189-b6c7-ebb0cc546047"
-    width="220"
-    alt="CarTalk Calling"
-  />
-  <img
-    src="https://github.com/user-attachments/assets/90d8e66e-c9e5-4c63-847a-d8f5c43a3ba9"
-    width="220"
-    alt="CarTalk Connected Call"
-  />
-  <img
-    src="https://github.com/user-attachments/assets/f8f7b5ee-84fb-40ce-9fa4-62bf7a3c83b1"
-    width="220"
-    alt="CarTalk App Icon"
-  />
+  <i>VideoSkipper running on top of short-form video applications.</i>
 </p>
 
 ---
 
-# 🎥 Feature Demos
+# 📱 What is VideoSkipper?
 
-### 🔍 Vehicle Discovery & Connection
+**VideoSkipper** automatically skips short-form video content when it detects user-defined keywords on the screen.
 
-<p align="center">
-  <video
-    src="https://github.com/user-attachments/assets/69f5faa8-a521-4b4d-a1ea-34619d54aa91"
-    width="600"
-    controls
-  ></video>
-</p>
+It works with apps such as:
 
-<p align="center">
-  <i>Discovering and connecting with a nearby CarTalk user.</i>
-</p>
+* Instagram Reels
+* YouTube Shorts
+* TikTok
 
-<br>
+VideoSkipper monitors the foreground screen, captures screenshots when a genuine scroll occurs, extracts visible text using **Google ML Kit's on-device OCR**, and checks the detected text against the user's saved keywords.
 
-### 📞 Real-Time Voice Communication
+If a keyword matches, VideoSkipper automatically performs a swipe gesture to move to the next video.
 
-<p align="center">
-  <video
-    src="https://github.com/user-attachments/assets/6b335d54-dd93-4443-8815-8cdc4f369bb9"
-    width="600"
-    controls
-  ></video>
-</p>
-
-<p align="center">
-  <i>Real-time voice communication using WebRTC.</i>
-</p>
-
----
-
-# 🏗 Architecture
-
-CarTalk follows a **modular Clean Architecture** approach.
+## Basic Workflow
 
 ```text
-CarTalk
-│
-├── app
-│   └── Application entry point
-│
-├── core
-│   ├── common
-│   ├── domain
-│   ├── navigation
-│   ├── ui
-│   └── firebase
-│
-└── feature
-    ├── onboarding
-    │   ├── data
-    │   ├── domain
-    │   └── presentation
-    │
-    ├── nearby
-    │   ├── data
-    │   ├── domain
-    │   └── presentation
-    │
-    └── calling
-        ├── data
-        ├── domain
-        └── presentation
+User Scrolls
+     │
+     ▼
+AccessibilityService
+     │
+     ▼
+Detect Scroll Event
+     │
+     ▼
+Capture Screenshot
+     │
+     ▼
+Downscale Bitmap
+     │
+     ▼
+ML Kit OCR
+     │
+     ▼
+Extract Text
+     │
+     ▼
+Compare Keywords
+     │
+     ├───────────────┐
+     │               │
+   Match           No Match
+     │               │
+     ▼               ▼
+Swipe Next       Do Nothing
+ Video
 ```
 
-### Module Responsibilities
+Everything happens **locally on the device**.
 
-| Module                | Responsibility                                  |
-| --------------------- | ----------------------------------------------- |
-| `:app`                | Application entry point and main navigation     |
-| `:core:common`        | Shared utilities and common components          |
-| `:core:domain`        | Shared domain models and abstractions           |
-| `:core:navigation`    | Application navigation                          |
-| `:core:ui`            | Shared UI components and design system          |
-| `:core:firebase`      | Firebase-related functionality                  |
-| `:feature:onboarding` | User and vehicle setup                          |
-| `:feature:nearby`     | BLE advertising, scanning and vehicle discovery |
-| `:feature:calling`    | WebRTC voice calling                            |
+---
 
-Each feature is separated into:
+# ✨ Features
+
+<table>
+<tr>
+<td width="50%">
+
+### 🔍 Real-Time Detection
+
+Detects text appearing on Reels and Shorts using on-device OCR.
+
+</td>
+
+<td width="50%">
+
+### 🤖 Automatic Skipping
+
+Automatically performs a swipe when a configured keyword is detected.
+
+</td>
+</tr>
+
+<tr>
+<td width="50%">
+
+### 💬 Floating Bubble
+
+Add keywords and control detection without leaving the currently opened app.
+
+</td>
+
+<td width="50%">
+
+### 🔋 Battery Conscious
+
+Uses event-based detection, foreground-app gating, bitmap optimization and automatic safeguards.
+
+</td>
+</tr>
+
+<tr>
+<td width="50%">
+
+### 🔒 Fully On-Device
+
+OCR processing happens locally. Screenshots are not uploaded to a server.
+
+</td>
+
+<td width="50%">
+
+### 🎛️ Independent Controls
+
+Text and image detection can be controlled independently.
+
+</td>
+</tr>
+</table>
+
+---
+
+# 🏗️ Architecture
+
+VideoSkipper follows a **Clean Architecture + MVVM** approach with clear separation between presentation, domain logic and data sources.
 
 ```text
-Data
- ↓
-Domain
- ↓
-Presentation
+VideoSkipper
+│
+├── presentation
+│   ├── screens
+│   ├── components
+│   └── floating overlay UI
+│
+├── viewmodel
+│   ├── MonitoringViewModel
+│   └── TextViewModel
+│
+├── domain
+│   └── repository
+│       ├── KeywordRepository
+│       ├── MonitoringRepository
+│       ├── AutoScrollDetectionRepository
+│       └── ScreenActionController
+│
+├── data
+│   └── repository
+│       ├── Room-backed repositories
+│       ├── DataStore-backed repositories
+│       └── ML Kit-backed repositories
+│
+├── service
+│   ├── PizzaDetectorAccessibilityService
+│   └── OverlayService
+│
+└── di
+    ├── DatabaseModule
+    └── RepositoryModule
 ```
 
-This keeps business logic independent from Android UI and infrastructure.
-
----
-
-# 🛠 Tech Stack
-
-### Android
-
-* Kotlin
-* Android SDK
-* Jetpack Compose
-* Material 3
-* Compose Navigation
-* Kotlin Coroutines
-* Kotlin Flow
-
-### Architecture
-
-* Clean Architecture
-* MVVM
-* Multi-module architecture
-* Repository pattern
-* Dependency Injection
-
-### Dependency Injection
-
-* Hilt
-
-### Nearby Communication
-
-* Bluetooth Low Energy (BLE)
-* BluetoothLeScanner
-* BluetoothLeAdvertiser
-* RSSI-based proximity estimation
-
-### Voice Communication
-
-* WebRTC
-* Peer-to-peer audio communication
-
-### Backend
-
-* Firebase
-* Firebase Realtime Database
-* Firebase Analytics
-* Firebase Crashlytics
-
----
-
-# 🔄 How It Works
+## Architecture Flow
 
 ```text
-┌─────────────────────┐
-│     CarTalk User    │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│ BLE Advertisement   │
-│ Vehicle Information │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│ Nearby BLE Scanner  │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│ Nearby Vehicles     │
-│ + RSSI              │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│ Select Vehicle      │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│ Firebase Signaling  │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│ WebRTC Connection   │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│ Real-Time Voice Call│
-└─────────────────────┘
+┌───────────────────┐
+│    Compose UI     │
+└─────────┬─────────┘
+          │
+          ▼
+┌───────────────────┐
+│     ViewModel     │
+│     StateFlow     │
+└─────────┬─────────┘
+          │
+          ▼
+┌───────────────────┐
+│   Domain Layer    │
+│    Repository     │
+└─────────┬─────────┘
+          │
+          ▼
+┌───────────────────┐
+│    Data Layer     │
+│ Room / DataStore  │
+│      / ML Kit     │
+└─────────┬─────────┘
+          │
+          ▼
+┌───────────────────┐
+│ Android Services  │
+│ Accessibility /   │
+│   WindowManager   │
+└───────────────────┘
 ```
 
 ---
 
-# 🚦 Getting Started
+# 🛠️ Tech Stack
+
+| Category                | Technology                               |
+| ----------------------- | ---------------------------------------- |
+| Language                | Kotlin                                   |
+| UI                      | Jetpack Compose                          |
+| Design                  | Material 3                               |
+| Architecture            | Clean Architecture + MVVM                |
+| Dependency Injection    | Hilt                                     |
+| Local Database          | Room                                     |
+| Preferences             | DataStore                                |
+| Concurrency             | Kotlin Coroutines                        |
+| Reactive State          | Kotlin Flow / StateFlow                  |
+| OCR                     | Google ML Kit Text Recognition           |
+| Screen Capture          | AccessibilityService `takeScreenshot()`  |
+| Automation              | AccessibilityService `dispatchGesture()` |
+| Overlay                 | `WindowManager` + `ComposeView`          |
+| Minimum Android Version | Android 11 / API 30                      |
+
+---
+
+# ⚙️ How It Works
+
+## 1. Floating Overlay
+
+`OverlayService` creates a draggable floating bubble using `WindowManager`.
+
+The overlay allows users to:
+
+* Add keywords
+* Enable/disable detection
+* Control VideoSkipper without leaving Instagram, YouTube or TikTok
+
+---
+
+## 2. Detecting Scroll Events
+
+`PizzaDetectorAccessibilityService` listens for accessibility events generated by the watched application.
+
+Instead of reacting to every accessibility event, VideoSkipper focuses on:
+
+```text
+TYPE_VIEW_SCROLLED
+```
+
+This prevents unnecessary OCR processing caused by frequent UI updates such as:
+
+* Video progress updates
+* Caption animations
+* UI changes
+* Content refreshes
+
+---
+
+## 3. Screenshot Capture
+
+When a genuine scroll is detected, the accessibility service captures the screen using:
+
+```kotlin
+takeScreenshot()
+```
+
+The captured bitmap is then downscaled before OCR processing to reduce memory usage and CPU consumption.
+
+---
+
+## 4. On-Device OCR
+
+The processed bitmap is passed to **ML Kit Text Recognition**.
+
+```text
+Screenshot
+    ↓
+Bitmap Processing
+    ↓
+ML Kit
+    ↓
+Recognized Text
+```
+
+No cloud OCR service is required.
+
+---
+
+## 5. Keyword Matching
+
+The recognized text is compared against the user's active keyword list stored locally.
+
+```text
+Detected Text
+      ↓
+Active Keywords
+      ↓
+String Matching
+      ↓
+Keyword Found?
+```
+
+If a keyword is detected, VideoSkipper triggers the automatic scrolling mechanism.
+
+---
+
+## 6. Automatic Swipe
+
+The service uses:
+
+```kotlin
+dispatchGesture()
+```
+
+to perform a synthetic swipe and move past the current video.
+
+```text
+Keyword Found
+      │
+      ▼
+dispatchGesture()
+      │
+      ▼
+Swipe Up
+      │
+      ▼
+Next Reel / Short
+```
+
+---
+
+# 🔋 Performance & Battery Engineering
+
+Performance was a major part of the implementation.
+
+## Event Precision
+
+The initial implementation relied on:
+
+```text
+TYPE_WINDOW_CONTENT_CHANGED
+```
+
+This produced excessive detection cycles because the event can fire frequently while content changes.
+
+It was replaced with:
+
+```text
+TYPE_VIEW_SCROLLED
+```
+
+This significantly reduces unnecessary screenshot and OCR operations.
+
+## Foreground-App Gating
+
+OCR processing only runs when a supported application is actually in the foreground.
+
+```text
+Instagram / YouTube / TikTok
+             │
+             ▼
+         App Foreground?
+           /       \
+         YES        NO
+          │          │
+          ▼          ▼
+      Run OCR     Do Nothing
+```
+
+## Bitmap Optimization
+
+Screenshots are downscaled before being processed.
+
+```text
+1080px Screenshot
+       ↓
+Bitmap Downscale
+       ↓
+720px Processing Image
+       ↓
+ML Kit OCR
+```
+
+## Mutex Protection
+
+Detection cycles are protected using a `Mutex`.
+
+This prevents multiple screenshot/OCR operations from running simultaneously when scroll events occur rapidly.
+
+## Automatic Safety Stop
+
+VideoSkipper includes a **6-hour automatic stop safeguard** to prevent an unattended accessibility detection process from continuously consuming battery.
+
+---
+
+# 🐛 Notable Bug Fix
+
+During development, the accessibility service appeared as:
+
+```text
+Connected
+Enabled
+```
+
+inside Android system settings, but it received **zero accessibility events**.
+
+After debugging the runtime `AccessibilityServiceInfo`, the following was discovered:
+
+```text
+eventTypes = 0
+typeAllMask = -1
+```
+
+The service configuration was not being applied.
+
+The root cause was a one-character typo in the manifest metadata key.
+
+### ❌ Incorrect
+
+```xml
+<meta-data
+    android:name="android.accessibility.service"
+    ... />
+```
+
+### ✅ Correct
+
+```xml
+<meta-data
+    android:name="android.accessibilityservice"
+    ... />
+```
+
+Android silently ignored the incorrect metadata key, causing the entire event-processing pipeline to fail.
+
+---
+
+# 🚀 Getting Started
 
 ## Requirements
 
 * Android Studio
-* Android SDK 26+
 * Kotlin
-* A physical Android device
+* Android SDK
+* Physical Android device
+* Android 11 / API 30 or higher
 
-> A physical device is strongly recommended because CarTalk relies on Bluetooth Low Energy and real-time WebRTC communication.
+A physical device is required because VideoSkipper depends on Android Accessibility APIs and `takeScreenshot()`.
 
 ---
 
-## Installation
+# 📦 Installation
 
-### 1. Clone the repository
+## 1. Clone the repository
 
 ```bash
-git clone https://github.com/mohitdamke/CarTalk.git
+git clone https://github.com/mohitdamke/VideoSkipper.git
 ```
 
-### 2. Open the project
+## 2. Open the project
 
-Open the cloned project using Android Studio.
+Open the project in Android Studio.
 
-### 3. Configure Firebase
+## 3. Build the application
 
-Add your Firebase configuration file:
+Allow Gradle to sync and build the project.
+
+## 4. Install on a physical device
+
+Run the application on an Android 11+ device.
+
+---
+
+# 🔐 Required Permissions
+
+VideoSkipper requires special Android permissions because it interacts with other applications.
+
+## Display Over Other Apps
+
+Required for the floating overlay bubble.
 
 ```text
-app/google-services.json
+Settings
+   ↓
+Apps
+   ↓
+Special App Access
+   ↓
+Display over other apps
+   ↓
+VideoSkipper
+   ↓
+Allow
 ```
 
-> Do not commit your `google-services.json` file to a public repository.
+## Accessibility Service
 
-### 4. Build the project
-
-Sync Gradle and build the application.
-
-### 5. Run on a physical device
-
-Install CarTalk on two Android devices and test:
+Enable VideoSkipper from:
 
 ```text
-Device A
-   ↕
-BLE Discovery
-   ↕
-Device B
-
-Device A
-   ↕
-Firebase Signaling
-   ↕
-WebRTC
-   ↕
-Device B
+Settings
+   ↓
+Accessibility
+   ↓
+Installed Apps / Downloaded Apps
+   ↓
+VideoSkipper
+   ↓
+Enable
 ```
+
+## Android 13+
+
+If the application was installed through sideloading, Android may require:
+
+```text
+App Info
+   ↓
+⋮
+   ↓
+Allow Restricted Settings
+```
+
+before the Accessibility Service can be enabled.
+
+---
+
+# ⚠️ Limitations
+
+* Requires **Android 11 / API 30+**
+* OCR accuracy depends on text visibility, size, contrast and styling
+* Highly stylized or animated text may not be detected
+* Current keyword matching is substring-based
+* Accessibility-based automation applications may face Google Play policy restrictions
+* Image detection UI exists, but the complete image-detection pipeline is not currently implemented
+* Continuous screen analysis can still consume battery despite optimization
 
 ---
 
 # 🔒 Privacy
 
-CarTalk is designed to minimize the amount of personal information exposed during vehicle discovery.
+VideoSkipper is designed around **on-device processing**.
 
-The discovery experience is based on vehicle information rather than directly exposing a user's phone number.
+The OCR pipeline does not require uploading screenshots to a remote server.
 
-However, **BLE discovery itself should not be treated as a security boundary**. Any information intentionally included in BLE advertisements can potentially be observed by other nearby Bluetooth scanners.
+Captured screen content is processed locally and is not intentionally persisted to disk as part of the detection pipeline.
 
-For production use, sensitive information should therefore never be placed directly into BLE advertisements.
-
----
-
-# 🧪 Current Status
-
-CarTalk is currently an **MVP / experimental project** focused on validating:
-
-* BLE-based nearby vehicle discovery
-* Vehicle identification
-* Proximity detection
-* Firebase signaling
-* WebRTC voice communication
-* Modular Android architecture
-
-The project is intended as a foundation for further development.
+> Accessibility services have powerful capabilities on Android. Users should only enable VideoSkipper if they understand and trust the permissions being granted.
 
 ---
 
-# 🤝 Contributing
+# 📂 Project Highlights
 
-Contributions, suggestions and improvements are welcome.
+This project demonstrates practical Android engineering concepts including:
 
-If you find a bug or have an idea for improving CarTalk, feel free to open an issue or submit a pull request.
+* Jetpack Compose
+* MVVM
+* Clean Architecture
+* Hilt Dependency Injection
+* Room
+* DataStore
+* Kotlin Coroutines
+* Kotlin Flow
+* Accessibility Services
+* `takeScreenshot()`
+* `dispatchGesture()`
+* WindowManager overlays
+* ML Kit OCR
+* Bitmap optimization
+* Concurrency control
+* Battery-conscious background processing
+
+---
+
+# 📄 License
+
+This project currently does not specify a license.
+
+If you plan to make the repository open source, consider adding an appropriate license such as **MIT** or **Apache-2.0**.
 
 ---
 
 # 👨‍💻 Author
 
-**Mohit**
-
-Android Developer
+<p align="center">
+  <strong>Mohit Damke</strong>
+  <br/>
+  Android Developer
+</p>
 
 ---
 
@@ -424,5 +648,5 @@ Android Developer
 </p>
 
 <p align="center">
-  🚗 <strong>CarTalk — Connect with the cars around you.</strong>
+  🎬 <strong>VideoSkipper — Scroll less. See what you want.</strong>
 </p>
