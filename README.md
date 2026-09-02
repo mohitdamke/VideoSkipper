@@ -1,149 +1,428 @@
-# VideoSkipper 🎬🚫
+# 🚗 CarTalk
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/32763238-4a51-4bb5-91b3-8460cce2a055" width="140" alt="VideoSkipper App Icon"/>
+  <strong>Real-time voice communication between nearby vehicles.</strong>
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/880dd6cf-bc06-497e-830a-25ff940baaf9" width="850" alt="VideoSkipper"/>
+  Discover nearby vehicles using Bluetooth Low Energy (BLE) and communicate through low-latency WebRTC voice calls — without sharing phone numbers.
 </p>
 
 <p align="center">
-  <b>Automatically skip unwanted Reels and Shorts using on-device OCR.</b>
+  <a href="https://www.youtube.com/watch?v=bMRLdE_ClGQ">
+    <img
+      src="https://img.youtube.com/vi/bMRLdE_ClGQ/maxresdefault.jpg"
+      alt="CarTalk App Demo"
+      width="700"
+    />
+  </a>
+</p>
+
+<p align="center">
+  ▶️ <strong>Click the video to watch the CarTalk Demo</strong>
+</p>
+
+
+<p align="center">
+  🎥 <strong>Watch the CarTalk Demo</strong>
 </p>
 
 ---
-**An Android app that automatically scrolls past short-form video content (Reels/Shorts) containing user-defined keywords — using on-device OCR, accessibility services, and synthetic gesture automation.**
 
-VideoSkipper watches your screen in real time while you scroll Instagram Reels or YouTube Shorts, reads on-screen text using ML Kit's on-device OCR, and automatically swipes past any content matching your saved keyword list — no manual scrolling, no cloud processing, no data leaving your device.
+## 📱 Overview
+
+CarTalk is an Android application that enables drivers traveling near each other to discover and communicate with one another.
+
+Instead of exchanging phone numbers, users can identify vehicles using their **car model and vehicle number**.
+
+The application uses:
+
+* 🔵 **Bluetooth Low Energy (BLE)** for nearby vehicle discovery
+* 📡 **RSSI** to estimate proximity
+* 📞 **WebRTC** for real-time voice communication
+* 🔥 **Firebase** for signaling and backend services
+* 🎨 **Jetpack Compose + Material 3** for the UI
+
+The goal is simple:
+
+> **Find a nearby vehicle → Select it → Start a voice call.**
 
 ---
 
 ## ✨ Features
 
-- 🔍 **Real-time keyword detection** — OCR-based text recognition on live screen content
-- 🤖 **Automatic scroll-past** — synthetic swipe gestures triggered on keyword match
-- 💬 **Floating overlay bubble** — add keywords without leaving Instagram/YouTube
-- 🔋 **Battery-conscious** — foreground-app gating, bitmap downscaling, auto-stop safeguards
-- 🔒 **Fully on-device** — no network calls, no data collection, screenshots never persisted to disk
-- 🎛️ **Independent toggles** — enable/disable text detection and image detection separately
+### 🔍 Nearby Vehicle Discovery
+
+Automatically discovers CarTalk users within Bluetooth range.
+
+Each nearby vehicle can be identified using:
+
+* Vehicle number
+* Car model
+* Bluetooth signal strength
+
+### 📞 Real-Time Voice Calling
+
+Uses **WebRTC** to establish low-latency peer-to-peer audio communication.
+
+### 🔐 Privacy Focused
+
+CarTalk is designed around vehicle-based identification instead of exposing personal phone numbers.
+
+### 📡 BLE Proximity Detection
+
+Bluetooth Low Energy is used to discover nearby CarTalk devices and retrieve their advertising information.
+
+### 🔥 Firebase Signaling
+
+Firebase is used as the signaling layer required to establish WebRTC connections between users.
+
+### 🎨 Modern Android UI
+
+The application is built completely with:
+
+* Jetpack Compose
+* Material 3
+* Modern Android architecture
 
 ---
 
-## 🏗️ Architecture
+# 📸 Screenshots
 
-Built with **Clean Architecture** principles — clear separation between UI, domain logic, and data sources, wired together with dependency injection.
+<p align="center">
+  <img
+    src="https://github.com/user-attachments/assets/c209c228-6ce7-474d-a499-14552252c1da"
+    width="220"
+    alt="CarTalk Onboarding"
+  />
+  <img
+    src="https://github.com/user-attachments/assets/5253a642-b957-46ef-beee-cfac1dad83cf"
+    width="220"
+    alt="CarTalk Discovery"
+  />
+  <img
+    src="https://github.com/user-attachments/assets/610ba444-b1b0-4ea6-b130-4ba95592a123"
+    width="220"
+    alt="CarTalk Incoming Call"
+  />
+</p>
 
+<p align="center">
+  <img
+    src="https://github.com/user-attachments/assets/8709648d-4620-4189-b6c7-ebb0cc546047"
+    width="220"
+    alt="CarTalk Calling"
+  />
+  <img
+    src="https://github.com/user-attachments/assets/90d8e66e-c9e5-4c63-847a-d8f5c43a3ba9"
+    width="220"
+    alt="CarTalk Connected Call"
+  />
+  <img
+    src="https://github.com/user-attachments/assets/f8f7b5ee-84fb-40ce-9fa4-62bf7a3c83b1"
+    width="220"
+    alt="CarTalk App Icon"
+  />
+</p>
+
+---
+
+# 🎥 Feature Demos
+
+### 🔍 Vehicle Discovery & Connection
+
+<p align="center">
+  <video
+    src="https://github.com/user-attachments/assets/69f5faa8-a521-4b4d-a1ea-34619d54aa91"
+    width="600"
+    controls
+  ></video>
+</p>
+
+<p align="center">
+  <i>Discovering and connecting with a nearby CarTalk user.</i>
+</p>
+
+<br>
+
+### 📞 Real-Time Voice Communication
+
+<p align="center">
+  <video
+    src="https://github.com/user-attachments/assets/6b335d54-dd93-4443-8815-8cdc4f369bb9"
+    width="600"
+    controls
+  ></video>
+</p>
+
+<p align="center">
+  <i>Real-time voice communication using WebRTC.</i>
+</p>
+
+---
+
+# 🏗 Architecture
+
+CarTalk follows a **modular Clean Architecture** approach.
+
+```text
+CarTalk
+│
+├── app
+│   └── Application entry point
+│
+├── core
+│   ├── common
+│   ├── domain
+│   ├── navigation
+│   ├── ui
+│   └── firebase
+│
+└── feature
+    ├── onboarding
+    │   ├── data
+    │   ├── domain
+    │   └── presentation
+    │
+    ├── nearby
+    │   ├── data
+    │   ├── domain
+    │   └── presentation
+    │
+    └── calling
+        ├── data
+        ├── domain
+        └── presentation
 ```
-presentation/          → Jetpack Compose UI (screens, floating overlay components)
-viewmodel/             → MonitoringViewModel, TextViewModel (StateFlow-driven UI state)
-domain/repository/     → Interfaces (KeywordRepository, MonitoringRepository, 
-                          AutoScrollDetectionRepository, ScreenActionController)
-data/repository/       → Implementations (Room-backed, DataStore-backed, ML Kit-backed)
-service/               → PizzaDetectorAccessibilityService, OverlayService
-di/                    → Hilt modules (DatabaseModule, RepositoryModule, etc.)
+
+### Module Responsibilities
+
+| Module                | Responsibility                                  |
+| --------------------- | ----------------------------------------------- |
+| `:app`                | Application entry point and main navigation     |
+| `:core:common`        | Shared utilities and common components          |
+| `:core:domain`        | Shared domain models and abstractions           |
+| `:core:navigation`    | Application navigation                          |
+| `:core:ui`            | Shared UI components and design system          |
+| `:core:firebase`      | Firebase-related functionality                  |
+| `:feature:onboarding` | User and vehicle setup                          |
+| `:feature:nearby`     | BLE advertising, scanning and vehicle discovery |
+| `:feature:calling`    | WebRTC voice calling                            |
+
+Each feature is separated into:
+
+```text
+Data
+ ↓
+Domain
+ ↓
+Presentation
 ```
 
-### Tech Stack
-
-| Layer | Technology |
-|---|---|
-| UI | Jetpack Compose, Material 3 |
-| DI | Hilt |
-| Local storage | Room (keywords), DataStore (settings) |
-| Concurrency | Kotlin Coroutines, Flow, Mutex |
-| OCR | ML Kit Text Recognition (on-device) |
-| Screen automation | AccessibilityService (`takeScreenshot()`, `dispatchGesture()`) |
-| Overlay UI | `WindowManager` + Compose `ComposeView` |
+This keeps business logic independent from Android UI and infrastructure.
 
 ---
 
-## ⚙️ How It Works
+# 🛠 Tech Stack
 
-1. **`OverlayService`** renders a draggable floating bubble (via `WindowManager`) with quick actions to add keywords and toggle detection — usable directly on top of Instagram/YouTube.
-2. **`PizzaDetectorAccessibilityService`** listens for `TYPE_VIEW_SCROLLED` accessibility events from watched apps (Instagram, YouTube, TikTok).
-3. On a genuine scroll event, it captures a screenshot (`takeScreenshot()`, API 30+), downscales it (1080px → 720px) to reduce memory/CPU load, and runs it through **ML Kit's on-device text recognizer**.
-4. The recognized text is checked against the user's saved keyword list (`Active keywords from DB`).
-5. **On a match** → a synthetic swipe gesture (`dispatchGesture()`) is dispatched, scrolling past the content automatically.
-6. **No match** → nothing happens; the app returns to listening for the next scroll.
+### Android
 
-All of this only runs when:
-- Text detection is toggled **ON**, and
-- The watched app (Instagram/YouTube/TikTok) is the **actual foreground app**
+* Kotlin
+* Android SDK
+* Jetpack Compose
+* Material 3
+* Compose Navigation
+* Kotlin Coroutines
+* Kotlin Flow
+
+### Architecture
+
+* Clean Architecture
+* MVVM
+* Multi-module architecture
+* Repository pattern
+* Dependency Injection
+
+### Dependency Injection
+
+* Hilt
+
+### Nearby Communication
+
+* Bluetooth Low Energy (BLE)
+* BluetoothLeScanner
+* BluetoothLeAdvertiser
+* RSSI-based proximity estimation
+
+### Voice Communication
+
+* WebRTC
+* Peer-to-peer audio communication
+
+### Backend
+
+* Firebase
+* Firebase Realtime Database
+* Firebase Analytics
+* Firebase Crashlytics
 
 ---
 
-## 🔋 Performance & Battery Engineering
+# 🔄 How It Works
 
-This project went through several iterations to get detection both **fast** and **cheap**:
-
-- **Debounce → continuous sampler**: an early debounce-based approach silently skipped any reel scrolled past faster than the debounce window — replaced with a lightweight polling loop gated by a "pending scroll" flag, checking almost every reel a user lands on.
-- **Event-type precision**: switched from `TYPE_WINDOW_CONTENT_CHANGED` (fires constantly for video-progress ticks, captions animating, etc.) to `TYPE_VIEW_SCROLLED` (fires only on real scroll gestures) — this alone cut redundant detection cycles per reel from 5–6× down to exactly 1×.
-- **Foreground-app gating**: zero screenshots or OCR calls while the watched app isn't in the foreground.
-- **Bitmap lifecycle management**: every captured/scaled bitmap is recycled immediately after use inside a guaranteed `finally` block; verified with custom live-bitmap-count instrumentation during development.
-- **Mutex-guarded detection cycles**: prevents overlapping screenshot/OCR work if scroll events fire faster than a single cycle can complete.
-- **6-hour auto-stop safeguard**: detection automatically disables itself after 6 continuous hours to protect against battery drain from an unattended background service.
-
----
-
-## 🐛 A Notable Bug Fix
-
-Midway through development, the accessibility service reported itself as **"connected"** and **"enabled"** in system settings — yet received **zero events**, even from the app's own UI. After ruling out permissions, Android 13 restricted-settings, and OEM battery management, the root cause was found by dumping the runtime `AccessibilityServiceInfo` object and comparing it against the declared manifest config:
-
+```text
+┌─────────────────────┐
+│     CarTalk User    │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ BLE Advertisement   │
+│ Vehicle Information │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Nearby BLE Scanner  │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Nearby Vehicles     │
+│ + RSSI              │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Select Vehicle      │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Firebase Signaling  │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ WebRTC Connection   │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ Real-Time Voice Call│
+└─────────────────────┘
 ```
-eventTypes = 0 (typeAllMask = -1)   ← config was NOT being applied at all
+
+---
+
+# 🚦 Getting Started
+
+## Requirements
+
+* Android Studio
+* Android SDK 26+
+* Kotlin
+* A physical Android device
+
+> A physical device is strongly recommended because CarTalk relies on Bluetooth Low Energy and real-time WebRTC communication.
+
+---
+
+## Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/mohitdamke/CarTalk.git
 ```
 
-The actual bug: a single-character typo in the manifest's meta-data key —
+### 2. Open the project
 
-```xml
-<!-- Wrong: silently ignored by Android -->
-<meta-data android:name="android.accessibility.service" .../>
+Open the cloned project using Android Studio.
 
-<!-- Correct -->
-<meta-data android:name="android.accessibilityservice" .../>
+### 3. Configure Firebase
+
+Add your Firebase configuration file:
+
+```text
+app/google-services.json
 ```
 
-A one-character fix that had been silently breaking the entire detection pipeline.
+> Do not commit your `google-services.json` file to a public repository.
+
+### 4. Build the project
+
+Sync Gradle and build the application.
+
+### 5. Run on a physical device
+
+Install CarTalk on two Android devices and test:
+
+```text
+Device A
+   ↕
+BLE Discovery
+   ↕
+Device B
+
+Device A
+   ↕
+Firebase Signaling
+   ↕
+WebRTC
+   ↕
+Device B
+```
 
 ---
 
-## 📸 Screenshots
+# 🔒 Privacy
 
-*(Add screenshots/GIFs here: floating bubble, keyword list screen, home screen with toggles, before/after auto-scroll demo)*
+CarTalk is designed to minimize the amount of personal information exposed during vehicle discovery.
 
----
+The discovery experience is based on vehicle information rather than directly exposing a user's phone number.
 
-## 🚀 Setup
+However, **BLE discovery itself should not be treated as a security boundary**. Any information intentionally included in BLE advertisements can potentially be observed by other nearby Bluetooth scanners.
 
-1. Clone the repo
-2. Open in Android Studio (Giraffe or newer recommended)
-3. Build and run on a device running **API 30+** (required for `takeScreenshot()`)
-4. On first launch:
-   - Grant **"Display over other apps"** permission (for the floating bubble)
-   - Enable **VideoSkipper** under **Settings → Accessibility**
-   - If sideloading on Android 13+, you may need to enable **"Allow restricted settings"** for the app under **App info → ⋮**
+For production use, sensitive information should therefore never be placed directly into BLE advertisements.
 
 ---
 
-## ⚠️ Known Limitations
+# 🧪 Current Status
 
-- Requires **API 30+** (Android 11) due to `takeScreenshot()` API dependency
-- Accessibility-based automation apps face Play Store policy scrutiny; not currently published
-- OCR accuracy depends on on-screen text clarity/contrast — heavily stylized captions may be missed
-- Keyword matching is currently substring-based (e.g. `"cat"` would also match `"category"`)
+CarTalk is currently an **MVP / experimental project** focused on validating:
 
----
+* BLE-based nearby vehicle discovery
+* Vehicle identification
+* Proximity detection
+* Firebase signaling
+* WebRTC voice communication
+* Modular Android architecture
 
-## 🧭 Possible Future Improvements
-
-- Word-boundary keyword matching (regex-based) to reduce false positives
-- Image-based detection (currently a UI toggle exists but the pipeline isn't implemented)
-- Per-app keyword lists instead of one global list
-- Local on-device analytics dashboard (reels skipped, time saved)
+The project is intended as a foundation for further development.
 
 ---
 
-## 📄 License
+# 🤝 Contributing
 
-*(Add your license here — MIT, Apache 2.0, etc.)*
+Contributions, suggestions and improvements are welcome.
+
+If you find a bug or have an idea for improving CarTalk, feel free to open an issue or submit a pull request.
+
+---
+
+# 👨‍💻 Author
+
+**Mohit**
+
+Android Developer
+
+---
+
+<p align="center">
+  Made with ❤️ using Kotlin & Android
+</p>
+
+<p align="center">
+  🚗 <strong>CarTalk — Connect with the cars around you.</strong>
+</p>
