@@ -41,9 +41,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
@@ -54,6 +55,7 @@ import com.mohit.videoskipper.presentation.components.ui.ScanAccentDivider
 import com.mohit.videoskipper.presentation.components.ui.SectionLabel
 import com.mohit.videoskipper.presentation.components.ui.StatusPill
 import com.mohit.videoskipper.service.OverlayService
+import com.mohit.videoskipper.ui.theme.Ink400
 import com.mohit.videoskipper.ui.theme.Signal500
 import com.mohit.videoskipper.ui.theme.VideoSkipperTheme
 import com.mohit.videoskipper.viewmodel.MonitoringViewModel
@@ -95,7 +97,12 @@ fun HomeScreen(
         topBar = {
             Column {
                 CenterAlignedTopAppBar(
-                    title = { Text("Video Skipper") },
+                    title = {
+                        Text(
+                            "Video Skipper",
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.background
                     )
@@ -110,8 +117,8 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
 
             if (!uiState.isAccessibilityServiceEnabled) {
@@ -121,6 +128,7 @@ fun HomeScreen(
                     colors = CardDefaults.elevatedCardColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer
                     ),
+                    elevation = CardDefaults.elevatedCardElevation(2.dp),
                     onClick = {
                         context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
                     }
@@ -136,18 +144,29 @@ fun HomeScreen(
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.error
                         )
-                        Column(modifier = Modifier.padding(start = 12.dp)) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 12.dp)
+                        ) {
                             Text(
                                 text = "Accessibility permission required",
                                 style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.onErrorContainer
                             )
                             Text(
                                 text = "Tap to enable — needed to read the screen and auto-scroll.",
                                 style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f),
                                 modifier = Modifier.padding(top = 2.dp)
                             )
                         }
+                        Icon(
+                            imageVector = Icons.Outlined.ChevronRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error
+                        )
                     }
                 }
             }
@@ -155,7 +174,8 @@ fun HomeScreen(
             ElevatedCard(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface)
+                colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.elevatedCardElevation(1.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -164,14 +184,16 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "Floating button",
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Medium
                         )
                         Text(
                             text = "Shows the scan bubble over other apps.",
                             style = MaterialTheme.typography.bodySmall,
+                            color = Ink400,
                             modifier = Modifier.padding(top = 2.dp)
                         )
                     }
@@ -204,7 +226,7 @@ fun HomeScreen(
                 }
             }
 
-            SectionLabel(text = "DETECTION TYPE", modifier = Modifier.padding(top = 8.dp))
+            SectionLabel(text = "DETECTION TYPE", modifier = Modifier.padding(top = 6.dp))
 
             DetectionItem(
                 icon = Icons.AutoMirrored.Outlined.Article,
@@ -241,6 +263,7 @@ private fun DetectionItem(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.elevatedCardElevation(1.dp),
         onClick = onNavigateClick
     ) {
         Row(
@@ -256,11 +279,15 @@ private fun DetectionItem(
                     .weight(1f)
                     .padding(start = 14.dp)
             ) {
-                Text(text = textTitle, style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    text = textTitle,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
                 StatusPill(
                     text = subtitle,
                     active = isOn,
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier.padding(top = 6.dp)
                 )
             }
 
@@ -277,7 +304,7 @@ private fun DetectionItem(
                 imageVector = Icons.Outlined.ChevronRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 4.dp)
+                modifier = Modifier.padding(start = 2.dp)
             )
         }
     }

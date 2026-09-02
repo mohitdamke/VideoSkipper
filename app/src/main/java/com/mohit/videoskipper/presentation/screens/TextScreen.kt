@@ -46,10 +46,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.mohit.videoskipper.data.KeywordEntity
@@ -86,7 +87,7 @@ fun TextScreen(
         topBar = {
             Column {
                 CenterAlignedTopAppBar(
-                    title = { Text("Flagged Text") },
+                    title = { Text("Flagged Text", fontWeight = FontWeight.SemiBold) },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(
@@ -107,7 +108,8 @@ fun TextScreen(
             FloatingActionButton(
                 onClick = { viewModel.onAddDialogOpen() },
                 containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                shape = RoundedCornerShape(18.dp)
             ) {
                 Icon(
                     imageVector = Icons.Outlined.TextFields,
@@ -138,27 +140,32 @@ fun TextScreen(
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         item {
                             OutlinedTextField(
                                 value = uiState.searchQuery,
                                 onValueChange = viewModel::onSearchQueryChange,
                                 modifier = Modifier.fillMaxWidth(),
-                                placeholder = { Text("Search flagged text...") },
+                                placeholder = { Text("Search flagged text...", color = Ink400) },
                                 leadingIcon = {
-                                    Icon(imageVector = Icons.Outlined.Search, contentDescription = null)
+                                    Icon(
+                                        imageVector = Icons.Outlined.Search,
+                                        contentDescription = null,
+                                        tint = Ink400
+                                    )
                                 },
                                 singleLine = true,
                                 shape = RoundedCornerShape(50.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedContainerColor = MaterialTheme.colorScheme.surface,
-                                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                                    focusedBorderColor = MaterialTheme.colorScheme.primary
+                                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedBorderColor = androidx.compose.ui.graphics.Color.Transparent
                                 )
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(6.dp))
                         }
 
                         if (uiState.filteredKeywords.isEmpty()) {
@@ -181,6 +188,8 @@ fun TextScreen(
                                 onToggleActive = { viewModel.onToggleActive(keyword) }
                             )
                         }
+
+                        item { Spacer(modifier = Modifier.height(72.dp)) } // clears the FAB
                     }
                 }
             }
@@ -207,12 +216,12 @@ private fun KeywordCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = CardDefaults.cardElevation(1.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 10.dp),
+                .padding(horizontal = 14.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconChip(
@@ -263,12 +272,14 @@ private fun EmptyState(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "No flagged text yet",
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "Tap + to add a word like \"pizza\" to auto-skip.",
             style = MaterialTheme.typography.bodySmall,
+            color = Ink400,
             textAlign = TextAlign.Center
         )
     }
@@ -283,7 +294,8 @@ private fun AddKeywordDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add flagged text") },
+        shape = RoundedCornerShape(24.dp),
+        title = { Text("Add flagged text", fontWeight = FontWeight.SemiBold) },
         text = {
             OutlinedTextField(
                 value = input,
@@ -299,7 +311,7 @@ private fun AddKeywordDialog(
         },
         confirmButton = {
             TextButton(onClick = onConfirm, enabled = input.isNotBlank()) {
-                Text("Add")
+                Text("Add", fontWeight = FontWeight.Medium)
             }
         },
         dismissButton = {

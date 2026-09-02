@@ -1,6 +1,7 @@
 package com.mohit.videoskipper.presentation.components.floating
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -29,6 +30,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
@@ -43,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
@@ -65,12 +68,6 @@ import com.mohit.videoskipper.ui.theme.SurfaceWhite
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
-/**
- * Kept deliberately theme-const (not MaterialTheme.colorScheme) — this
- * composable is hosted in a system overlay window, which may not be
- * wrapped in VideoSkipperTheme, so it pulls the same palette directly
- * to stay visually identical to the rest of the app.
- */
 @Composable
 fun FloatingBubbleIcon(
     isTextDetectionOn: Boolean,
@@ -89,13 +86,13 @@ fun FloatingBubbleIcon(
 
     Column(
         horizontalAlignment = Alignment.End,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
 
         AnimatedVisibility(
             visible = showTextInput,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
+            enter = fadeIn(tween(150)) + expandVertically(tween(180)),
+            exit = fadeOut(tween(120)) + shrinkVertically(tween(150))
         ) {
             InlineTextInputCard(
                 onSend = { text ->
@@ -110,18 +107,19 @@ fun FloatingBubbleIcon(
 
         AnimatedVisibility(
             visible = expanded && !showTextInput,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
+            enter = fadeIn(tween(150)) + expandVertically(tween(180)),
+            exit = fadeOut(tween(120)) + shrinkVertically(tween(150))
         ) {
             Card(
-                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.shadow(10.dp, RoundedCornerShape(22.dp), clip = false),
+                shape = RoundedCornerShape(22.dp),
                 colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
-                elevation = CardDefaults.cardElevation(6.dp)
+                elevation = CardDefaults.cardElevation(0.dp)
             ) {
                 Column(
                     modifier = Modifier
-                        .widthIn(min = 200.dp)
-                        .padding(vertical = 6.dp)
+                        .widthIn(min = 208.dp)
+                        .padding(vertical = 8.dp)
                 ) {
                     DetectionRow(
                         icon = Icons.Filled.TextFields,
@@ -149,6 +147,7 @@ fun FloatingBubbleIcon(
         Box(
             modifier = Modifier
                 .size(56.dp)
+                .shadow(8.dp, CircleShape, clip = false)
                 .clip(CircleShape)
                 .background(
                     Brush.linearGradient(listOf(Ocean700, Ocean400))
@@ -193,9 +192,9 @@ private fun DetectionRow(
 ) {
     Row(
         modifier = Modifier
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .padding(horizontal = 14.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Box(
             modifier = Modifier
@@ -215,8 +214,9 @@ private fun DetectionRow(
 
         Text(
             text = label,
-            fontSize = 13.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
+            color = Ink600,
             modifier = Modifier.weight(1f)
         )
 
@@ -227,7 +227,8 @@ private fun DetectionRow(
                 checkedThumbColor = SurfaceWhite,
                 checkedTrackColor = Signal500,
                 uncheckedThumbColor = SurfaceWhite,
-                uncheckedTrackColor = Sand100
+                uncheckedTrackColor = Sand100,
+                uncheckedBorderColor = Sand100
             ),
             modifier = Modifier.size(width = 40.dp, height = 24.dp)
         )
@@ -249,9 +250,10 @@ private fun InlineTextInputCard(
     }
 
     Card(
-        shape = RoundedCornerShape(24.dp),
+        modifier = Modifier.shadow(10.dp, RoundedCornerShape(28.dp), clip = false),
+        shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
-        elevation = CardDefaults.cardElevation(6.dp)
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
             modifier = Modifier.padding(6.dp),
@@ -264,7 +266,7 @@ private fun InlineTextInputCard(
                 modifier = Modifier
                     .width(180.dp)
                     .focusRequester(focusRequester),
-                placeholder = { Text("e.g. pizza", fontSize = 13.sp) },
+                placeholder = { Text("e.g. pizza", fontSize = 13.sp, color = Ink600.copy(alpha = 0.5f)) },
                 singleLine = true,
                 shape = RoundedCornerShape(50.dp),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
@@ -277,9 +279,10 @@ private fun InlineTextInputCard(
                     }
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = SurfaceWhite,
-                    unfocusedContainerColor = SurfaceWhite,
-                    focusedBorderColor = Ocean700
+                    focusedContainerColor = Sand100.copy(alpha = 0.4f),
+                    unfocusedContainerColor = Sand100.copy(alpha = 0.4f),
+                    focusedBorderColor = Ocean700,
+                    unfocusedBorderColor = Sand100
                 )
             )
 
@@ -289,12 +292,15 @@ private fun InlineTextInputCard(
                         onSend(text.trim())
                         focusManager.clearFocus()
                     }
-                }
+                },
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = Ocean700
+                )
             ) {
                 Icon(
                     imageVector = Icons.Filled.Send,
                     contentDescription = "Send",
-                    tint = Ocean700
+                    tint = if (text.isNotBlank()) Ocean700 else Ink600.copy(alpha = 0.35f)
                 )
             }
         }

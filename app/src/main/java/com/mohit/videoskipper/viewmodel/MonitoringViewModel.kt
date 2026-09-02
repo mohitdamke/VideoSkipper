@@ -36,6 +36,9 @@ class MonitoringViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(MonitoringUiState())
     val uiState: StateFlow<MonitoringUiState> = _uiState.asStateFlow()
 
+    // Tracks the last-applied value so we only act on actual transitions
+    private var previousTextEnabledValue: Boolean? = null
+
     init {
         observeState()
         refreshAccessibilityServiceStatus()
@@ -137,11 +140,14 @@ class MonitoringViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.R)
     private fun syncTextDetectionServiceState(enabled: Boolean) {
+        if (previousTextEnabledValue == enabled) return
+        previousTextEnabledValue = enabled
 
         val service = TextDetectorAccessibilityService.instance ?: return
 
         if (enabled) {
             service.startMonitoring()
+            service.triggerImmediateCheck()
         } else {
             service.stopMonitoring()
         }

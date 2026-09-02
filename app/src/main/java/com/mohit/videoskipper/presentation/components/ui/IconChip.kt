@@ -16,7 +16,6 @@ import com.mohit.videoskipper.ui.theme.Ocean700
 import com.mohit.videoskipper.ui.theme.Sand100
 import com.mohit.videoskipper.ui.theme.SurfaceWhite
 
-/** Colored circular chip behind an icon — used consistently for every list row icon. */
 @Composable
 fun IconChip(
     icon: ImageVector,
@@ -26,7 +25,7 @@ fun IconChip(
     Box(
         modifier = modifier
             .clip(CircleShape)
-            .background(if (isOn) Ocean700 else Sand100),
+            .background(if (isOn) Ocean700 else Sand100.copy(alpha = 0.7f)),
         contentAlignment = Alignment.Center
     ) {
         Icon(
